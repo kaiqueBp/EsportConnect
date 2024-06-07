@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "289805114939",
+    "project_id": "esporteconnect-dd7b1",
+    "storage_bucket": "esporteconnect-dd7b1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:289805114939:android:b260bcc23ecd7cd0cc061e",
+        "android_client_info": {
+          "package_name": "com.example.esporte"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhy-G_2efQZhyI0ECzaGdZrkQURcPeM_8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
