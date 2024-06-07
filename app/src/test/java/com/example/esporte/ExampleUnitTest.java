@@ -99,7 +99,7 @@ public class ExampleUnitTest {
     public void setUser() {
         grupo = new Grupo();
         Usuarios user1 = new Usuarios("kaique");
-        Usuarios user2 = new Usuarios("kaique");
+        Usuarios user2 = new Usuarios("Pereira");
         usuarios = new ArrayList<>();
         usuarios.add(user1);
         usuarios.add(user2);
@@ -118,7 +118,7 @@ public class ExampleUnitTest {
         assertNotNull(membros);
         assertEquals(2, membros.size());
         assertEquals("kaique", membros.get(0).getNome());
-        assertEquals("kaique", membros.get(1).getNome());
+        assertEquals("Pereira", membros.get(1).getNome());
     }
 
     }
