@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="Estados">
+        <item>Selecione um Estado</item>
+        <item>AC</item>
+        <item>AL</item>
+        <item>AP</item>
+        <item>AM</item>
+        <item>BA</item>
+        <item>CE</item>
+        <item>DF</item>
+        <item>ES</item>
+        <item>GO</item>
+        <item>MA</item>
+        <item>MG</item>
+        <item>MS</item>
+        <item>MT</item>
+        <item>PA</item>
+        <item>PB</item>
+        <item>PE</item>
+        <item>PI</item>
+        <item>PR</item>
+        <item>RJ</item>
+        <item>RN</item>
+        <item>RO</item>
+        <item>RR</item>
+        <item>RS</item>
+        <item>SC</item>
+        <item>SE</item>
+        <item>SP</item>
+        <item>TO</item>
+    </string-array>
+
+    <string-array name="EstadoExtenso">
+        <item>Acre</item>
+        <item>Alagoas</item>
+        <item>Amapá</item>
+        <item>Amazonas</item>
+        <item>Bahia</item>
+        <item>Ceará</item>
+        <item>Distrito Federal</item>
+        <item>Espírito Santo</item>
+        <item>Goiás</item>
+        <item>Maranhão</item>
+        <item>Minas Gerais</item>
+        <item>Mato Grosso do Sul</item>
+        <item>Mato Grosso</item>
+        <item>Pará</item>
+        <item>Paraíba</item>
+        <item>Pernambuco</item>
+        <item>Piauí</item>
+        <item>Paraná</item>
+        <item>Rio de Janeiro</item>
+        <item>Rio Grande do Norte</item>
+        <item>Rondônia</item>
+        <item>Roraima</item>
+        <item>Rio Grande do Sul</item>
+        <item>Santa Catarina</item>
+        <item>Sergipe</item>
+        <item>São Paulo</item>
+        <item>Tocantins</item>
+    </string-array>
+</resources>

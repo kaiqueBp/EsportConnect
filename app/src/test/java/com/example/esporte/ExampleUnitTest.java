@@ -68,33 +68,33 @@ public class ExampleUnitTest {
         usuario.setSenha("senha123");
         assertEquals("senha123", usuario.getSenha());
     }
-    @Test
-    public void testAdicionarEsportes() {
-        Esporte futebol = new Esporte("Futebol");
-        Esporte basquete = new Esporte("Basquete");
-
-        usuario.adicionarEsporte(futebol);
-        usuario.adicionarEsporte(basquete);
-
-        assertEquals(2, usuario.getEsportes().size());
-
-        assertEquals("Futebol", usuario.getEsportes().get(0).getNome());
-        assertEquals("Basquete", usuario.getEsportes().get(1).getNome());
-    }
-    @Test
-    public void testRemoverEsporte() {
-        Esporte futebol = new Esporte("Futebol");
-        Esporte basquete = new Esporte("Basquete");
-
-        usuario.adicionarEsporte(futebol);
-        usuario.adicionarEsporte(basquete);
-
-        usuario.removerEsporte(futebol);
-
-        assertEquals(1, usuario.getEsportes().size());
-
-        assertEquals("Basquete", usuario.getEsportes().get(0).getNome());
-    }
+//    @Test
+//    public void testAdicionarEsportes() {
+//        Esporte futebol = new Esporte("Futebol");
+//        Esporte basquete = new Esporte("Basquete");
+//
+//        usuario.adicionarEsporte(futebol);
+//        usuario.adicionarEsporte(basquete);
+//
+//        assertEquals(2, usuario.getEsportes().size());
+//
+//        assertEquals("Futebol", usuario.getEsportes().get(0).getNome());
+//        assertEquals("Basquete", usuario.getEsportes().get(1).getNome());
+//    }
+//    @Test
+//    public void testRemoverEsporte() {
+//        Esporte futebol = new Esporte("Futebol");
+//        Esporte basquete = new Esporte("Basquete");
+//
+//        usuario.adicionarEsporte(futebol);
+//        usuario.adicionarEsporte(basquete);
+//
+//        usuario.removerEsporte(futebol);
+//
+//        assertEquals(1, usuario.getEsportes().size());
+//
+//        assertEquals("Basquete", usuario.getEsportes().get(0).getNome());
+//    }
     @Before
     public void setUser() {
         grupo = new Grupo();

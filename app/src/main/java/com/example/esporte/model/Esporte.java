@@ -5,8 +5,10 @@ import java.util.List;
 public class Esporte {
     private String id;
     private String nome;
-    private List<Usuarios> usuarios ;
+    private List<String> esportes ;
+    public Esporte() {
 
+    }
     public Esporte(String nome) {
         this.nome = nome;
     }
@@ -27,12 +29,11 @@ public class Esporte {
         this.id = id;
     }
 
-    public List<Usuarios> getUsuarios() {
-        return usuarios;
+    public List<String> getEsportes() {
+        return esportes;
     }
 
-    public void setUsuarios(List<Usuarios> usuarios) {
-        this.usuarios = usuarios;
+    public void setEsportes(List<String> esportes) {
+        this.esportes = esportes;
     }
-
 }

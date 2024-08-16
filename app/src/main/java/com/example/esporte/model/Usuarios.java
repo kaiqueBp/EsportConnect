@@ -1,15 +1,21 @@
 package com.example.esporte.model;
 
+import com.example.esporte.config.ConfiguracaoFirebase;
+import com.google.firebase.database.DatabaseReference;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Usuarios {
+    private String idUsuario;
     private String nome;
     private String idade;
     private String sexo;
     private String email;
     private String senha;
-    private List<Esporte> esportes;
+    private String foto;
+    private List<String> esportes;
+    private Endereco endereco;
 
     public Usuarios(String nome) {
         this.nome = nome;
@@ -17,6 +23,34 @@ public class Usuarios {
 
     public Usuarios() {
 
+    }
+    public void salvar(){
+        DatabaseReference referencia = ConfiguracaoFirebase.getFirebase();
+        referencia.child("Usuarios").child(this.idUsuario).setValue(this);
+    }
+
+    public Endereco getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(Endereco endereco) {
+        this.endereco = endereco;
+    }
+
+    public String getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(String idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
     }
 
     public String getNome() {
@@ -59,20 +93,20 @@ public class Usuarios {
         this.senha = senha;
     }
 
-    public List<Esporte> getEsportes() {
+    public List<String> getEsportes() {
         return esportes;
     }
 
-    public void setEsportes(List<Esporte> esportes) {
+    public void setEsportes(List<String> esportes) {
         this.esportes = esportes;
     }
-    public void adicionarEsporte(Esporte esporte) {
+    public void adicionarEsporte(String esporte) {
         if (this.esportes == null) {
             this.esportes = new ArrayList<>();
         }
-        this.esportes.add(esporte);
+        this.esportes.add(esporte.toString());
     }
-    public void removerEsporte(Esporte esporte) {
+    public void removerEsporte(String esporte) {
         if (this.esportes != null) {
             this.esportes.remove(esporte);
         }

@@ -44,6 +44,11 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-database-ktx")
     testImplementation ("org.robolectric:robolectric:4.9")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.firebaseui:firebase-ui-storage:7.2.0")
+    implementation ("com.squareup.okhttp3:okhttp:4.9.0")
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
 
 }
