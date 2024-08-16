@@ -4,6 +4,7 @@ import static com.example.esporte.view.ListarEsporteActivity.selectedEsportes;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import com.example.esporte.R;
 import com.example.esporte.config.Base64Custom;
 import com.example.esporte.config.ConfiguracaoFirebase;
 import com.example.esporte.config.NominatimApi;
+import com.example.esporte.config.ValidateCityCallback;
 import com.example.esporte.model.Endereco;
 import com.example.esporte.model.Esporte;
 import com.example.esporte.model.Usuarios;
@@ -82,7 +84,8 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
          email = findViewById(R.id.idEmail);
          senha = findViewById(R.id.idSenha);
          btFoto = findViewById(R.id.btAdicionarFt);
-
+        img = findViewById(R.id.idImg);
+        img.setImageDrawable(getResources().getDrawable(R.drawable.baseline_person_24));
         text = findViewById(R.id.idCidade);
         spinner = findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(CadastroActivity.this);
@@ -115,16 +118,7 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                      usuario.setEmail(sEmail);
                      usuario.setSenha(sSenha);
                      usuario.setSexo(RadionButton());
-                     //endereco = new Endereco();
-                     SalvarFoto();
                      usuario.setEsportes(selectedEsportes);
-                     usuario.setEndereco(endereco);
-                     cadastrarUsuario();
-                     if(endereco.getLocalidade() != null && endereco.getUf() != null){
-
-
-                     }else Toast.makeText(CadastroActivity.this, "Cidade inválida", Toast.LENGTH_SHORT).show();
-
 
                  }else{
                      Toast.makeText(CadastroActivity.this, "Preencha todos os campos!", Toast.LENGTH_SHORT).show();
@@ -158,10 +152,12 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
+
                             String idUsuario = Base64Custom.codificar(usuario.getEmail());
                             usuario.setIdUsuario(idUsuario);
                             usuario.setFoto(imgUrl);
                             usuario.salvar();
+
                             Toast.makeText(CadastroActivity.this, "Cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
                             abrirTelaPrincipal();
                         }else{
@@ -182,13 +178,6 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                         }
                     }
                 });
-
-
-//        String nome = this.nome.getText().toString();
-//        String email = this.email.getText().toString();
-//        String senha = this.senha.getText().toString();
-//        String sexo = this.sexo.getText().toString();
-
     }
 
     @Override
@@ -205,39 +194,44 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
     }
 
     public void SalvarFoto(){
-        img.setDrawingCacheEnabled(true);
-        img.buildDrawingCache();
-        Bitmap bitmap = img.getDrawingCache();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG,100,baos);
-        byte[] dadosImagem = baos.toByteArray();
-        // Salvar a imagem no Firebase Storage
-        StorageReference imagemRef = FirebaseStorage.getInstance().getReference();
-        StorageReference image = imagemRef.child("imagens");
-        StorageReference imgRef = image.child(nome.getText().toString());
+        if(img.getDrawable() == null){
 
-        UploadTask up = imgRef.putBytes(dadosImagem);
-        up.addOnFailureListener(CadastroActivity.this, new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(CadastroActivity.this,"Erro ao salvar a Imagem",Toast.LENGTH_LONG).show();
-            }
-        }).addOnSuccessListener(CadastroActivity.this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                imgRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        Uri url = task.getResult();
-                        usuario.setFoto(url.toString());
-                        usuario.salvar();
-                        Toast.makeText(CadastroActivity.this,url.toString(),Toast.LENGTH_LONG).show();
+        }else{
+            img.setDrawingCacheEnabled(true);
+            img.buildDrawingCache();
+            Bitmap bitmap = img.getDrawingCache();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100,baos);
+            byte[] dadosImagem = baos.toByteArray();
+            // Salvar a imagem no Firebase Storage
+            StorageReference imagemRef = FirebaseStorage.getInstance().getReference();
+            StorageReference image = imagemRef.child("imagens");
+            StorageReference imgRef = image.child(nome.getText().toString());
 
-                    }
-                });
-                Toast.makeText(CadastroActivity.this,"Imagem Salva com Sucesso",Toast.LENGTH_LONG).show();
-            }
-        });
+            UploadTask up = imgRef.putBytes(dadosImagem);
+            up.addOnFailureListener(CadastroActivity.this, new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(CadastroActivity.this,"Erro ao salvar a Imagem",Toast.LENGTH_LONG).show();
+                }
+            }).addOnSuccessListener(CadastroActivity.this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    imgRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Uri> task) {
+                            Uri url = task.getResult();
+                            usuario.setFoto(url.toString());
+                            usuario.salvar();
+                            Toast.makeText(CadastroActivity.this,url.toString(),Toast.LENGTH_LONG).show();
+
+                        }
+                    });
+                    Toast.makeText(CadastroActivity.this,"Imagem Salva com Sucesso",Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
     }
 
     public void validar(){
@@ -250,10 +244,23 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
             Toast.makeText(this, "Informe uma cidade e um estado", Toast.LENGTH_SHORT).show();
             return;
         }else {
-            ValidateCityTask task = new ValidateCityTask(CadastroActivity.this);
+            ValidateCityTask task = new ValidateCityTask(this, new ValidateCityCallback() {
+                @Override
+                public void onCityValidated(boolean isValid, Endereco endereco) {
+                    if (isValid) {
+                        // Cidade válida, prosseguir com o cadastro do usuário
+                        usuario.setEndereco(endereco);
+                        cadastrarUsuario();
+                    } else {
+                        // Cidade inválida, mostrar mensagem de erro
+
+                        Toast.makeText(CadastroActivity.this, "Cidade inválida ou Estado inválido", Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+            });
             task.execute(city, state);
         }
-
     }
 
     public static String padronizarTitulo(String str) {
@@ -293,10 +300,13 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
 
     public class ValidateCityTask extends AsyncTask<String, Void, String> {
         private CadastroActivity mActivity;
+        private ValidateCityCallback callback;
 
-        public ValidateCityTask(CadastroActivity activity) {
+        public ValidateCityTask(CadastroActivity activity, ValidateCityCallback callback) {
             mActivity = activity;
+            this.callback = callback;
         }
+
 
         @Override
         protected String doInBackground(String... params) {
@@ -358,23 +368,30 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                     Toast.makeText(mActivity, "Erro ao parsear JSON", Toast.LENGTH_SHORT).show();
                     // Handle JSON parsing error
                 }
-                if(j>0 && k>0){
+                if (j > 0 && k > 0) {
+                    SalvarFoto();
                     endereco.setLocalidade(text.getText().toString());
                     endereco.setUf(spinner.getSelectedItem().toString());
-                    //Toast.makeText(mActivity, "Cidade válida", Toast.LENGTH_SHORT).show();
-                }
-                else if(j>2){
+                    callback.onCityValidated(true, endereco);
+                }  else if(j>2){
+                    SalvarFoto();
                     endereco.setLocalidade(text.getText().toString());
                     endereco.setUf(spinner.getSelectedItem().toString());
+                    callback.onCityValidated(true, endereco);
+                }else {
+                    Toast.makeText(CadastroActivity.this, "Cidade inválida ou Estado inválido", Toast.LENGTH_SHORT).show();
+                    //CadastroActivity.this.restartActivity();
                 }
-                else Toast.makeText(mActivity, "Cidade inválida", Toast.LENGTH_SHORT).show();
                 j=0;
                 k=0;
             }
         }
     }
 
-
+    public void restartActivity() {
+        finish();
+        startActivity(getIntent());
+    }
 
 
 

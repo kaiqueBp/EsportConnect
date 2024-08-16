@@ -1,5 +1,7 @@
 package com.example.esporte.model;
 
+import android.util.Log;
+
 import com.example.esporte.config.ConfiguracaoFirebase;
 import com.google.firebase.database.DatabaseReference;
 
@@ -26,7 +28,11 @@ public class Usuarios {
     }
     public void salvar(){
         DatabaseReference referencia = ConfiguracaoFirebase.getFirebase();
-        referencia.child("Usuarios").child(this.idUsuario).setValue(this);
+        if (this.idUsuario != null) {
+            referencia.child("Usuarios").child(this.idUsuario).setValue(this);
+        } else {
+            Log.e("Erro", "idUsuario é nulo!");
+        }
     }
 
     public Endereco getEndereco() {
