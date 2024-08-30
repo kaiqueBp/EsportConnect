@@ -5,10 +5,11 @@ import android.util.Log;
 import com.example.esporte.config.ConfiguracaoFirebase;
 import com.google.firebase.database.DatabaseReference;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Usuarios {
+public class Usuarios implements Serializable {
     private String idUsuario;
     private String nome;
     private String idade;
@@ -16,7 +17,7 @@ public class Usuarios {
     private String email;
     private String senha;
     private String foto;
-    private List<String> esportes;
+    private ArrayList<String> esportes = new ArrayList<>();
     private Endereco endereco;
 
     public Usuarios(String nome) {
@@ -99,11 +100,11 @@ public class Usuarios {
         this.senha = senha;
     }
 
-    public List<String> getEsportes() {
+    public ArrayList<String> getEsportes() {
         return esportes;
     }
 
-    public void setEsportes(List<String> esportes) {
+    public void setEsportes(ArrayList<String> esportes) {
         this.esportes = esportes;
     }
     public void adicionarEsporte(String esporte) {

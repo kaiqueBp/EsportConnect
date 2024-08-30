@@ -1,9 +1,10 @@
 package com.example.esporte.model;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Endereco {
+public class Endereco implements Serializable {
     private String localidade; // Nome da cidade
     private String uf; // Sigla do estado
 

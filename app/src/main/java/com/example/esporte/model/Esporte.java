@@ -1,14 +1,25 @@
 package com.example.esporte.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Esporte {
+public class Esporte implements Serializable {
     private String id;
     private String nome;
+    private String image;
     private List<String> esportes ;
     public Esporte() {
 
     }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String imagem) {
+        this.image = imagem;
+    }
+
     public Esporte(String nome) {
         this.nome = nome;
     }

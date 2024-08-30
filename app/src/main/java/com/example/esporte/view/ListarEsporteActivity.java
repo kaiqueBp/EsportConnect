@@ -37,7 +37,8 @@ public class ListarEsporteActivity extends AppCompatActivity {
     private ListView esporte;
     private Button salvar;
     private Esporte esport ;
-    public static List<String> selectedEsportes;
+    public static ArrayList<String> selectedEsportes;
+    private Usuarios usuario = new Usuarios();
 
     @Override
     protected void onStart() {
@@ -51,37 +52,113 @@ public class ListarEsporteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_listar_esporte);
         esporte = findViewById(R.id.idLista);
         salvar = findViewById(R.id.btSalvarEsporte);
-        esport = new Esporte();
+        //esport = new Esporte();
+        Intent intent = getIntent();
+        usuario = (Usuarios) getIntent().getSerializableExtra("esportes");
         selectedEsportes = new ArrayList<>();
         pegarEsportes();
 
-        //usuario = new Usuarios();
+//        if(usuario != null){
+//            pegarEportesSelecionados();
+//            for (int i = 0; i < lista.size(); i++) {
+//                String esporteAtual = lista.get(i);
+//                if (selectedEsportes.contains(esporteAtual)) {
+//                    // Adicionar a posição na lista de itens selecionados
+//                    selectedItems.add(i);
+//                    // Mudar a cor de fundo do item para mostrar que está selecionado
+//                    View item = esporte.getChildAt(i);
+//                    if (item != null) {
+//                        item.setBackgroundColor(Color.GREEN);
+//                    }
+//                }
+//            }
+//
+//            esporte.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                @Override
+//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                    String esporteSelecionado = lista.get(position);
+//
+//                    if (selectedItems.contains(position)) {
+//                        // Remover o item da lista de selecionados
+//                        selectedItems.remove((Integer) position);
+//                        view.setBackgroundColor(Color.TRANSPARENT);
+//                        usuario.getEsportes().remove(esporteSelecionado);
+//                    } else {
+//                        // Adicionar o item à lista de selecionados
+//                        selectedItems.add(position);
+//                        view.setBackgroundColor(Color.GREEN);
+//                        usuario.getEsportes().add(esporteSelecionado);
+//                    }
+//                    // Atualiza a lista de esportes do usuário conforme a seleção
+//                }
+//            });
+//        }
+        if(usuario != null){
+            selectedEsportes.addAll(usuario.getEsportes()); // Adiciona os esportes já selecionados
+            pegarEportesSelecionados();
+            esporte.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String esporteSelecionado = lista.get(position);
 
-        // Crie o adapter apenas após ter carregado os dados
-        esporte.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (selectedItems.contains(position)) {
-                    // Remover o item da lista de selecionados
-                    selectedItems.remove((Integer) position);
-                    // Muda a cor do item para a cor original
-                    view.setBackgroundColor(Color.TRANSPARENT);
-                   // usuario.removerEsporte(lista.get(position));
-                    selectedEsportes.remove(lista.get(position));
-                } else {
-                    // Adicionar o item à lista de selecionados
-                    selectedItems.add(position);
-                    // Muda a cor do item para a cor de seleção
-                    view.setBackgroundColor(Color.GREEN);
-                    //usuario.adicionarEsporte(lista.get(position));
-                    selectedEsportes.add(lista.get(position));
+                    if (selectedItems.contains(position)) {
+                        // Remover o item da lista de selecionados
+                        selectedItems.remove((Integer) position);
+                        view.setBackgroundColor(Color.TRANSPARENT);
+                        selectedEsportes.remove(esporteSelecionado);
+                    } else {
+                        // Adicionar o item à lista de selecionados
+                        selectedItems.add(position);
+                        view.setBackgroundColor(Color.GREEN);
+                        if (!selectedEsportes.contains(esporteSelecionado)) {
+                            selectedEsportes.add(esporteSelecionado);
+                        }
+                    }
                 }
-                String esporteSelecionado = lista.get(position);
-                //a.setText(esporteSelecionado);
-                // Faça algo com o esporte selecionado
+            });
+
+        }else{
+            for (int i = 0; i < lista.size(); i++) {
+                String esporteAtual = lista.get(i);
+                if (selectedEsportes.contains(esporteAtual)) {
+                    // Adicionar a posição na lista de itens selecionados
+                    selectedItems.add(i);
+                    // Mudar a cor de fundo do item para mostrar que está selecionado
+                    View item = esporte.getChildAt(i);
+                    if (item != null) {
+                        item.setBackgroundColor(Color.GREEN);
+                    }
+                }
             }
-        });
-        
+            //usuario = new Usuarios();
+
+            // Crie o adapter apenas após ter carregado os dados
+            esporte.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    if (selectedItems.contains(position)) {
+                        // Remover o item da lista de selecionados
+                        selectedItems.remove((Integer) position);
+                        // Muda a cor do item para a cor original
+                        view.setBackgroundColor(Color.TRANSPARENT);
+                        // usuario.removerEsporte(lista.get(position));
+                        selectedEsportes.remove(lista.get(position));
+                    } else {
+                        // Adicionar o item à lista de selecionados
+                        selectedItems.add(position);
+                        // Muda a cor do item para a cor de seleção
+                        view.setBackgroundColor(Color.GREEN);
+                        //usuario.adicionarEsporte(lista.get(position));
+                        selectedEsportes.add(lista.get(position));
+                    }
+                    String esporteSelecionado = lista.get(position);
+                    //a.setText(esporteSelecionado);
+                    // Faça algo com o esporte selecionado
+                }
+            });
+        }
+
+
         salvar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,6 +168,7 @@ public class ListarEsporteActivity extends AppCompatActivity {
 
     }
     public  void  Encerrar(View view){
+
         finish();
     }
     public void pegarEsportes() {
@@ -103,6 +181,44 @@ public class ListarEsporteActivity extends AppCompatActivity {
                     lista.add(nomeEsporte);
                 }
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(ListarEsporteActivity.this, android.R.layout.simple_list_item_1, lista);
+                esporte.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Log.e("Esportes", "Erro ao recuperar esportes: " + databaseError.getMessage());
+            }
+        });
+    }
+    public void pegarEportesSelecionados() {
+        firebase.child("Esportes").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                lista.clear(); // Limpe a lista antes de adicionar novos dados
+                for (DataSnapshot esporteSnapshot : dataSnapshot.getChildren()) {
+                    String nomeEsporte = esporteSnapshot.child("nome").getValue(String.class);
+                    lista.add(nomeEsporte);
+                }
+                // Crie o adapter apenas após ter carregado os dados
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(ListarEsporteActivity.this, android.R.layout.simple_list_item_1, lista) {
+                    @Override
+                    public View getView(int position, View convertView, android.view.ViewGroup parent) {
+                        View view = super.getView(position, convertView, parent);
+
+                        // Verifica se o esporte na posição atual está na lista de esportes do usuário
+                        String esporteAtual = lista.get(position);
+                        if (usuario.getEsportes().contains(esporteAtual)) {
+                            // Se o esporte já estiver selecionado, marque a posição e mude a cor de fundo
+                            selectedItems.add(position);
+                            view.setBackgroundColor(Color.GREEN);
+                        } else {
+                            // Caso contrário, mantenha a cor de fundo padrão
+                            view.setBackgroundColor(Color.TRANSPARENT);
+                        }
+                        return view;
+                    }
+                };
+
                 esporte.setAdapter(adapter);
             }
 

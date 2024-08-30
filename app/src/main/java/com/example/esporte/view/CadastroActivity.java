@@ -105,9 +105,9 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
              @Override
              public void onClick(View v) {
                  String sNome = nome.getText().toString();
-                 String sEmail = email.getText().toString();
+                 String sEmail = email.getText().toString().toLowerCase();
                  String sSenha = senha.getText().toString();
-                 validar();
+
                  //boolean sSexo = RadionButton();
                  if(!sNome.isEmpty() && !sEmail.isEmpty() && !sSenha.isEmpty() && RadionButton() != ""){
 
@@ -119,6 +119,7 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                      usuario.setSenha(sSenha);
                      usuario.setSexo(RadionButton());
                      usuario.setEsportes(selectedEsportes);
+                     validar();
 
                  }else{
                      Toast.makeText(CadastroActivity.this, "Preencha todos os campos!", Toast.LENGTH_SHORT).show();
@@ -373,7 +374,7 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                     endereco.setLocalidade(text.getText().toString());
                     endereco.setUf(spinner.getSelectedItem().toString());
                     callback.onCityValidated(true, endereco);
-                }  else if(j>2){
+                }  else if(j>=4){
                     SalvarFoto();
                     endereco.setLocalidade(text.getText().toString());
                     endereco.setUf(spinner.getSelectedItem().toString());

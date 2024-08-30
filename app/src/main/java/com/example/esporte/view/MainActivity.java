@@ -36,9 +36,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        verificaLogin();
         setContentView(R.layout.activity_main);
         FirebaseApp.initializeApp(this);
-        verificaLogin();
+
         btCadastrar = findViewById(R.id.idCadastrar);
         btEntrar = findViewById(R.id.btEntrar);
         email = findViewById(R.id.idEmailLogin);
@@ -124,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public void verificaLogin(){
         auth = ConfiguracaoFirebase.getAutenticacao();
+        auth.signOut();
         if(auth.getCurrentUser() != null){
             startActivity(new Intent(this, PrincipalActivity.class));
             finish();
