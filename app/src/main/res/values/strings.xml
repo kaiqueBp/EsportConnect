@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Esporte</string>
+    <string name="spinner_hint">Selecione o Estado</string>
 </resources>

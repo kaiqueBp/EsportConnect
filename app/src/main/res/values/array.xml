@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="Sexo">
+        <item>Selecione</item>
+        <item>Masculino</item>
+        <item>Feminino</item>
+        <item>Outro</item>
+    </string-array>
     <string-array name="Estados">
         <item>Selecione um Estado</item>
         <item>AC</item>

@@ -5,6 +5,7 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
+
     </style>
 
 

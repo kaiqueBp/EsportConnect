@@ -16,6 +16,10 @@
         android:theme="@style/Theme.Esporte"
         tools:targetApi="31">
         <activity
+            android:name=".view.ChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
             android:name=".view.EditarActivity"
             android:exported="false" />
         <activity
@@ -35,7 +39,8 @@
             android:exported="false" />
         <activity
             android:name=".view.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

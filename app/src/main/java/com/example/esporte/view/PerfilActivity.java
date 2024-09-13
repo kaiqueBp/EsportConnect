@@ -52,7 +52,7 @@ public class PerfilActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        imageView = findViewById(R.id.pImg);
+        imageView = findViewById(R.id.idFt);
         listaEsportes = findViewById(R.id.pEsportes);
         nome = findViewById(R.id.pNome);
         email = findViewById(R.id.pEmail);

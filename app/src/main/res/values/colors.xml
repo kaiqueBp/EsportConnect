@@ -2,4 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="padrao">#6750A3</color>
+    <color name="padrao2">#9186AD</color>
+    <color name="padrao1">#725EA3</color>
 </resources>

@@ -10,17 +10,18 @@
 
     <!-- Centraliza a imagem no topo -->
     <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/pImg"
+        android:id="@+id/idFt"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_marginTop="52dp"
+        android:background="@color/padrao2"
         android:scaleType="centerCrop"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:srcCompat="@drawable/ic_launcher_background"
-        app:shapeAppearanceOverlay="@style/Base.Theme.Esporte" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/Base.Theme.Esporte"
+        app:srcCompat="@drawable/ic_launcher_background" />
 
     <!-- Alinha os TextViews abaixo da imagem, começando com o nome -->
     <TextView
@@ -29,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Nome"
-        app:layout_constraintTop_toBottomOf="@id/pImg"
+        app:layout_constraintTop_toBottomOf="@id/idFt"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5" />
