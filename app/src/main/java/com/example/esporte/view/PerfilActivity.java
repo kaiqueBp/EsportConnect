@@ -32,7 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class PerfilActivity extends AppCompatActivity {
+public class PerfilActivity extends BaseBotton {
     private ImageView imageView;
     private ListView listaEsportes;
     private TextView nome,email,sexo,cidade;
@@ -45,13 +45,9 @@ public class PerfilActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_perfil);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
         imageView = findViewById(R.id.idFt);
         listaEsportes = findViewById(R.id.pEsportes);
         nome = findViewById(R.id.pNome);
@@ -173,5 +169,11 @@ public class PerfilActivity extends AppCompatActivity {
                 // Tratar erro
             }
         });
+    }
+    public void Sair(View view){
+        auth.signOut();
+        Intent intent = new Intent(PerfilActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

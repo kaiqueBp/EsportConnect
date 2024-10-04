@@ -1,5 +1,8 @@
 package com.example.esporte.model;
 
+import com.example.esporte.config.ConfiguracaoFirebase;
+import com.google.firebase.database.DatabaseReference;
+
 public class Conversa {
     private String idRemetente;
     private String idDestinatario;
@@ -8,6 +11,11 @@ public class Conversa {
     private String isGroup;
     private Grupo grupo;
 
+    public void Salvar(){
+        DatabaseReference database = ConfiguracaoFirebase.getFirebase();
+        DatabaseReference databaseConversa = database.child("conversas");
+        databaseConversa.child(getIdRemetente()).child(getIdDestinatario()).setValue(this);
+    }
     public String getIdRemetente() {
         return idRemetente;
     }

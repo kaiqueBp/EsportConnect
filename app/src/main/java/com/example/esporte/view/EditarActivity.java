@@ -64,7 +64,7 @@ public class EditarActivity extends AppCompatActivity implements AdapterView.OnI
     private String state;
     private FirebaseAuth auth;
     private Button editar,ft;
-    private static final int REQUEST_IMAGE_SELECT = 1;
+    private static final int REQUEST_IMAGE_SELECT = 200;
     private Uri selectedImageUri;
     private DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Usuarios");
     @Override
@@ -93,8 +93,9 @@ public class EditarActivity extends AppCompatActivity implements AdapterView.OnI
         ft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, REQUEST_IMAGE_SELECT);
+                Intent intentGaleria = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                intentGaleria.setType("image/*");
+                startActivityForResult(intentGaleria, REQUEST_IMAGE_SELECT);
             }
         });
 
@@ -125,12 +126,16 @@ public class EditarActivity extends AppCompatActivity implements AdapterView.OnI
     protected void onActivityResult ( int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
         Log.d("DEBUG", "onActivityResult called");
-        if (requestCode == REQUEST_IMAGE_SELECT && resultCode == RESULT_OK && data != null) {
-
-            selectedImageUri = data.getData();
-
-            //img = findViewById(R.id.idImg);
-            img.setImageURI(selectedImageUri);
+        if (resultCode == RESULT_OK && data != null) {
+            img.setImageDrawable(null);
+            try {
+                Bitmap imagem = null;
+                Uri selected = data.getData();
+                imagem = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selected);
+                img.setImageBitmap(imagem);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
     @Override
@@ -146,7 +151,7 @@ public class EditarActivity extends AppCompatActivity implements AdapterView.OnI
     @Override
     protected void onStart() {
         super.onStart();
-        CarregarDados();
+        //CarregarDados();
     }
 
     public void DeletarFoto(){

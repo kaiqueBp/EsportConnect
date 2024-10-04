@@ -258,6 +258,7 @@ public class PessoasActivity extends AppCompatActivity {
         DatabaseReference usuarioRef = ConfiguracaoFirebase.getFirebase().child("Usuarios");
         //Query query = usuarioRef.orderByChild("esportes/01").equalTo("Basquete");
         FirebaseAuth auth = FirebaseAuth.getInstance();
+
         usuarioRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

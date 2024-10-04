@@ -371,7 +371,7 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                 }
                 if (j > 0 && k > 0) {
                     SalvarFoto();
-                    endereco.setLocalidade(text.getText().toString());
+                    endereco.setLocalidade(text.getText().toString().toLowerCase().replace(" ", ""));
                     endereco.setUf(spinner.getSelectedItem().toString());
                     callback.onCityValidated(true, endereco);
                 }  else if(j>=4){

@@ -125,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
     }
     public void verificaLogin(){
         auth = ConfiguracaoFirebase.getAutenticacao();
-        auth.signOut();
         if(auth.getCurrentUser() != null){
             startActivity(new Intent(this, PrincipalActivity.class));
             finish();

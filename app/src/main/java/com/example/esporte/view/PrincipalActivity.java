@@ -38,7 +38,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class PrincipalActivity extends AppCompatActivity {
+public class PrincipalActivity extends BaseBotton {
     private RecyclerView recyclerView;
     private ArrayList<Esporte> arrayEsporte = new ArrayList<>();
     private TextInputEditText pesquisa;
@@ -162,6 +162,11 @@ public class PrincipalActivity extends AppCompatActivity {
     public interface Callback {
         void onDataLoaded();
         void onError();
+    }
+
+    public void Conversa(View view){
+        Intent intent = new Intent(PrincipalActivity.this, ListarConversasActivity.class);
+        startActivity(intent);
     }
 
 }
