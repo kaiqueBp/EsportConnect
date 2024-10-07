@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -28,6 +29,8 @@ import com.example.esporte.model.Esporte;
 import com.example.esporte.model.Usuarios;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -38,11 +41,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class PrincipalActivity extends BaseBotton {
+public class PrincipalActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ArrayList<Esporte> arrayEsporte = new ArrayList<>();
     private TextInputEditText pesquisa;
     private TextView perfil;
+    private BottomNavigationView navBotton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +60,27 @@ public class PrincipalActivity extends BaseBotton {
         });
         pesquisa = findViewById(R.id.idPes);
         perfil = findViewById(R.id.idPerfil);
+        navBotton = findViewById(R.id.idBotton);
+        navBotton.setSelectedItemId(R.id.navHome);
 
+        navBotton.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                if(item.getItemId() == R.id.navHome){
+                    return true;
+                }
+                if(item.getItemId() == R.id.navConversa){
+                    Intent intent = new Intent(PrincipalActivity.this, ListarConversasActivity.class);
+                    startActivity(intent);
+                }
+                if(item.getItemId() == R.id.navPerfil){
+                    Intent intent = new Intent(PrincipalActivity.this, PerfilActivity.class);
+                    startActivity(intent);
+                }
+
+                return false;
+            }
+        });
         perfil.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -163,10 +187,4 @@ public class PrincipalActivity extends BaseBotton {
         void onDataLoaded();
         void onError();
     }
-
-    public void Conversa(View view){
-        Intent intent = new Intent(PrincipalActivity.this, ListarConversasActivity.class);
-        startActivity(intent);
-    }
-
 }

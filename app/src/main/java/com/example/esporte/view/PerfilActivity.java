@@ -45,7 +45,6 @@ public class PerfilActivity extends BaseBotton {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_perfil);
 
         imageView = findViewById(R.id.idFt);
