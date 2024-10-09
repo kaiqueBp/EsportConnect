@@ -1,7 +1,11 @@
 package com.example.esporte.config;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +19,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.esporte.R;
 import com.example.esporte.model.Conversa;
+import com.example.esporte.model.Mensagem;
 import com.example.esporte.model.Usuarios;
 import com.example.esporte.view.ChatActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -58,6 +70,58 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
                 context.startActivity(intent);
             }
         });
+        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                int posicao = holder.getAdapterPosition();
+                // Obter o usuário exibido na conversa correspondente
+                Usuarios usuarioCLicado = conversas.get(posicao).getUsuarioExibicao();
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setMessage("Excluir conversa?");
+                builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        FirebaseAuth auth = ConfiguracaoFirebase.getAutenticacao();
+                        String usuarioPessaoal = auth.getCurrentUser().getEmail();
+
+                        deletarConversa(usuarioCLicado.getIdUsuario(),Base64Custom.codificar(usuarioPessaoal), new Callback() {
+                            @Override
+                            public void onDataLoaded() {
+                                deleteMessages(usuarioCLicado.getIdUsuario(),Base64Custom.codificar(usuarioPessaoal), new Callback() {
+                                    @Override
+                                    public void onDataLoaded() {
+                                        ((Activity) context).recreate();
+                                    }
+
+                                    @Override
+                                    public void onError() {
+
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onError() {
+
+                            }
+                        });
+
+
+                        // Excluir conversa e mensagens
+                        //deleteConversationAndMessages();
+                    }
+                });
+                builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Fechar opção de excluir conversa
+                    }
+                });
+                builder.show();
+
+                return false;
+            }
+        });
     }
 
     @Override
@@ -77,4 +141,60 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
             cardView = itemView.findViewById(R.id.cardConversa);
         }
     }
+    private void deleteMessages(String idDestinatarioBase64, String idUsuarioBase64, final Callback callback) {
+        // Consultar mensagens com IDs de remetente e destinatário
+        DatabaseReference mensagensRef = FirebaseDatabase.getInstance().getReference("Mensagens");
+        mensagensRef.child(idUsuarioBase64)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot mensagemSnapshot : dataSnapshot.getChildren()) {
+                            String idDestinatario = mensagemSnapshot.getKey();
+
+                            // Comparar os IDs
+                            if (idDestinatarioBase64.equals(idDestinatario)) {
+                                // Excluir a mensagem
+                                mensagensRef.child(idUsuarioBase64).child(idDestinatario).removeValue();
+                                callback.onDataLoaded();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.w("ExcluirMensagem", "Erro ao excluir mensagem", databaseError.toException());
+                        callback.onError();
+                    }
+                });
+    }
+    private void deletarConversa(String idDestinatarioBase64, String idUsuarioBase64, final Callback callback) {
+        DatabaseReference mensagensRef = FirebaseDatabase.getInstance().getReference("conversas");
+        mensagensRef.child(idUsuarioBase64)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot mensagemSnapshot : dataSnapshot.getChildren()) {
+                            String idDestinatario = mensagemSnapshot.getKey();
+
+                            // Comparar os IDs
+                            if (idDestinatarioBase64.equals(idDestinatario)) {
+                                // Excluir a mensagem
+                                mensagensRef.child(idUsuarioBase64).child(idDestinatario).removeValue();
+                                callback.onDataLoaded();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.w("ExcluirMensagem", "Erro ao excluir mensagem", databaseError.toException());
+                        callback.onError();
+                    }
+                });
+    }
+    public interface Callback {
+        void onDataLoaded();
+        void onError();
+    }
+
 }

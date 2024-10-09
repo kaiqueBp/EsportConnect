@@ -2,10 +2,14 @@ package com.example.esporte.view;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -14,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import androidx.activity.EdgeToEdge;
@@ -49,6 +54,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+
+
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,10 +75,15 @@ public class ChatActivity extends BaseBotton {
     private StorageReference storage;
     private DatabaseReference mensagemRef;
     private ChildEventListener childEventListener;
-    private ImageView imagemCamera;
+    private ImageView imagemCamera, imgLocalizar;
     private static final int SELECAO_CAMERA = 100;
     private static final int SELECAO_GALERIA = 200;
     private Mensagem ultimaMensagem;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+    private static final int REQUEST_LOCATION_PERMISSION = 100;
+    private Double longi;
+    private Double lati;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +99,7 @@ public class ChatActivity extends BaseBotton {
         nome = findViewById(R.id.idNm);
         mensagem = findViewById(R.id.editMenssagem);
         imagemCamera = findViewById(R.id.imgCamera);
+        imgLocalizar = findViewById(R.id.imgLoc);
         recyclerView = findViewById(R.id.recyclerMenssagem);
         auth = ConfiguracaoFirebase.getAutenticacao();
         idRemetente = Base64Custom.codificar(auth.getCurrentUser().getEmail());
@@ -101,7 +114,29 @@ public class ChatActivity extends BaseBotton {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
 
+        imgLocalizar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PegarLoc(new Callback() {
+                    @Override
+                    public void onDataLoaded() {
+                        Mensagem msg = new Mensagem();
+                        msg.setIdUsuario(idRemetente);
+                        if(lati != null && longi != null){
+                            msg.setLatitude(lati);
+                            msg.setLongitude(longi);
+                            Salvar(idRemetente, idDestinatario, msg);
+                            Salvar(idDestinatario, idRemetente, msg);
+                        }
+                    }
 
+                    @Override
+                    public void onError() {
+
+                    }
+                });
+            }
+        });
 
         Intent intent = getIntent();
         pessoa = (Usuarios) intent.getSerializableExtra("usuarioCLicado");
@@ -299,5 +334,67 @@ public class ChatActivity extends BaseBotton {
 
             }
         });
+    }
+    private void PegarLoc(final Callback callback) {
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        // Verificar permissão de localização
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Solicitar uma única atualização de localização
+            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    lati = location.getLatitude();
+                    longi = location.getLongitude();
+                    callback.onDataLoaded(); // Chama o callback após pegar a localização
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+                }
+            }, null); // O segundo parâmetro é o Handler, null para o padrão.
+        } else {
+            // Solicitar permissão de localização
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_LOCATION_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permissão concedida, iniciar solicitação única de localização
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    PegarLoc(new Callback() {
+                        @Override
+                        public void onDataLoaded() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    });
+                }
+            } else {
+                // Permissão negada, notificar o usuário
+                Toast.makeText(this, "Permissão de localização necessária", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public interface Callback {
+        void onDataLoaded();
+        void onError();
     }
 }

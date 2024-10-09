@@ -5,6 +5,8 @@ public class Mensagem {
     private String nome;
     private String mensagem;
     private String imagem;
+    private Double latitude;
+    private Double longitude;
 
 
     public Mensagem(String idUsuario, String nome, String mensagem, String imagem) {
@@ -21,6 +23,22 @@ public class Mensagem {
 
     public void setIdUsuario(String idUsuario) {
         this.idUsuario = idUsuario;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     public String getNome() {

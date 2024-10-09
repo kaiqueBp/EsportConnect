@@ -79,6 +79,12 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 app:srcCompat="@drawable/baseline_photo_camera_24" />
+
+            <ImageView
+                android:id="@+id/imgLoc"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:srcCompat="@drawable/baseline_location_on_24" />
         </LinearLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
