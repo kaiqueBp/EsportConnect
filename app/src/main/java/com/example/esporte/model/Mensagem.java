@@ -16,6 +16,7 @@ public class Mensagem {
         this.imagem = imagem;
     }
     public Mensagem() {
+        this.nome = "";
     }
     public String getIdUsuario() {
         return idUsuario;

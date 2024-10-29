@@ -2,11 +2,15 @@ package com.example.esporte.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -18,7 +22,6 @@ import com.example.esporte.config.Base64Custom;
 import com.example.esporte.config.ConfiguracaoFirebase;
 import com.example.esporte.config.ListarConversaAdapter;
 import com.example.esporte.model.Conversa;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,6 +36,8 @@ public class ListarConversasActivity extends AppCompatActivity {
     private DatabaseReference databaseRef;
     private DatabaseReference database;
     private ChildEventListener childEventListener;
+    private Toolbar toolbarConversa;
+    private View criarGrupo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +48,14 @@ public class ListarConversasActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        criarGrupo = findViewById(R.id.idCriarGrupo);
+        toolbarConversa = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbarConversa);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Conversas");
+            toolbarConversa.setTitleTextColor(getResources().getColor(R.color.white));
+        }
         adapter = new ListarConversaAdapter(Listaconversa, ListarConversasActivity.this);
         recyclerView = findViewById(R.id.idListarConversa);
         recyclerView.setHasFixedSize(true);
@@ -51,13 +64,32 @@ public class ListarConversasActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         databaseRef = ConfiguracaoFirebase.getFirebase();
         String identificarUsuario = Base64Custom.codificar(ConfiguracaoFirebase.getAutenticacao().getCurrentUser().getEmail());
-        database =  databaseRef.child("conversas").child(identificarUsuario);
+        database =  databaseRef.child("Conversas").child(identificarUsuario);
+
+        criarGrupo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ListarConversasActivity.this, CriarGrupoActivity.class);
+                intent.putExtra("lista", Listaconversa);
+                startActivity(intent);
+                //Toast.makeText(ListarConversasActivity.this, "Criar Grupo", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
     @Override
     protected void onStart() {
         super.onStart();
+        Listaconversa.clear();
+        adapter.notifyDataSetChanged();
         RecuperarConversas();
     }
 
@@ -73,8 +105,10 @@ public class ListarConversasActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Conversa conversa = snapshot.getValue(Conversa.class);
-                Listaconversa.add(conversa);
-                adapter.notifyDataSetChanged();
+                if (!Listaconversa.contains(conversa)) {
+                    Listaconversa.add(conversa);
+                    adapter.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -84,7 +118,9 @@ public class ListarConversasActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
+                Conversa conversa = snapshot.getValue(Conversa.class);
+                Listaconversa.remove(conversa);
+                adapter.notifyDataSetChanged();
             }
 
             @Override

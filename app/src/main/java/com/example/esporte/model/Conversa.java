@@ -3,7 +3,9 @@ package com.example.esporte.model;
 import com.example.esporte.config.ConfiguracaoFirebase;
 import com.google.firebase.database.DatabaseReference;
 
-public class Conversa {
+import java.io.Serializable;
+
+public class Conversa implements Serializable {
     private String idRemetente;
     private String idDestinatario;
     private String ultimaMensagem;
@@ -11,10 +13,15 @@ public class Conversa {
     private String isGroup;
     private Grupo grupo;
 
+    public Conversa() {
+        this.setIsGroup("false");
+    }
+
     public void Salvar(){
         DatabaseReference database = ConfiguracaoFirebase.getFirebase();
-        DatabaseReference databaseConversa = database.child("conversas");
+        DatabaseReference databaseConversa = database.child("Conversas");
         databaseConversa.child(getIdRemetente()).child(getIdDestinatario()).setValue(this);
+        //databaseConversa.child(getIdDestinatario()).child(getIdRemetente()).setValue(this);
     }
     public String getIdRemetente() {
         return idRemetente;

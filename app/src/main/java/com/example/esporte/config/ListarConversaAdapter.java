@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.esporte.R;
 import com.example.esporte.model.Conversa;
+import com.example.esporte.model.Grupo;
 import com.example.esporte.model.Mensagem;
 import com.example.esporte.model.Usuarios;
 import com.example.esporte.view.ChatActivity;
@@ -50,24 +51,46 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
 
     @Override
     public void onBindViewHolder(@NonNull ListarConversaAdapter.MyViewHolder holder, int position) {
-        Conversa conversa = conversas.get(position);
-        Usuarios usuario = conversa.getUsuarioExibicao();
+        Conversa conversa = conversas.get(holder.getAdapterPosition());
 
-        holder.nome.setText(usuario.getNome());
-        holder.msg.setText(conversa.getUltimaMensagem());
-        if(usuario.getFoto() != null){
-            Glide.with(context).load(usuario.getFoto()).into(holder.img);
+
+        if(conversa.getIsGroup().equals("true")){
+            Grupo grupo = conversa.getGrupo();
+            holder.nome.setText(grupo.getNome());
+            if(grupo.getFoto() != null){
+                Glide.with(context).load(grupo.getFoto()).into(holder.img);
+            }else{
+                holder.img.setImageResource(R.drawable.baseline_person_24);
+            }
         }else{
-            holder.img.setImageResource(R.drawable.baseline_person_24);
+            Usuarios usuario = conversa.getUsuarioExibicao();
+            holder.nome.setText(usuario.getNome());
+            holder.msg.setText(conversa.getUltimaMensagem());
+            if(usuario.getFoto() != null){
+                Glide.with(context).load(usuario.getFoto()).into(holder.img);
+            }else{
+                holder.img.setImageResource(R.drawable.baseline_person_24);
+            }
         }
+
+
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int posicao = holder.getAdapterPosition();
-                Usuarios usuarioCLicado = conversas.get(posicao).getUsuarioExibicao();
-                Intent intent = new Intent(context, ChatActivity.class);
-                intent.putExtra("usuarioCLicado", usuarioCLicado);
-                context.startActivity(intent);
+                Conversa conversa = conversas.get(holder.getAdapterPosition());
+                if(conversa.getIsGroup().equals("true")){
+                    //Grupo grupo = conversa.getGrupo();
+                    Intent intent = new Intent(context, ChatActivity.class);
+                    intent.putExtra("grupoClicado", conversa.getGrupo());
+                    context.startActivity(intent);
+                }else{
+                    int posicao = holder.getAdapterPosition();
+                    Usuarios usuarioCLicado = conversas.get(posicao).getUsuarioExibicao();
+                    Intent intent = new Intent(context, ChatActivity.class);
+                    intent.putExtra("usuarioCLicado", usuarioCLicado);
+                    context.startActivity(intent);
+                }
+
             }
         });
         holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -75,19 +98,32 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
             public boolean onLongClick(View v) {
                 int posicao = holder.getAdapterPosition();
                 // Obter o usuário exibido na conversa correspondente
-                Usuarios usuarioCLicado = conversas.get(posicao).getUsuarioExibicao();
+               // Usuarios usuarioCLicado = conversas.get(posicao).getUsuarioExibicao();
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setMessage("Excluir conversa?");
                 builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        FirebaseAuth auth = ConfiguracaoFirebase.getAutenticacao();
-                        String usuarioPessaoal = auth.getCurrentUser().getEmail();
+                        String idRem;
+                        String idDest;
+                        if(conversa.getUsuarioExibicao() == null){
+                            idRem = conversa.getIdRemetente();
+                            idDest = conversa.getIdDestinatario();
+                        }else{
+                            Usuarios usuarioCLicado = conversas.get(posicao).getUsuarioExibicao();
 
-                        deletarConversa(usuarioCLicado.getIdUsuario(),Base64Custom.codificar(usuarioPessaoal), new Callback() {
+                            FirebaseAuth auth = ConfiguracaoFirebase.getAutenticacao();
+                            String usuarioPessaoal = auth.getCurrentUser().getEmail();
+                            idDest = usuarioCLicado.getIdUsuario();
+                            idRem = Base64Custom.codificar(usuarioPessaoal);
+                        }
+
+
+                        deletarConversa(idDest,idRem, new Callback() {
                             @Override
                             public void onDataLoaded() {
-                                deleteMessages(usuarioCLicado.getIdUsuario(),Base64Custom.codificar(usuarioPessaoal), new Callback() {
+                                deleteMessages(idDest,idRem, new Callback() {
                                     @Override
                                     public void onDataLoaded() {
                                         ((Activity) context).recreate();
@@ -105,10 +141,6 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
 
                             }
                         });
-
-
-                        // Excluir conversa e mensagens
-                        //deleteConversationAndMessages();
                     }
                 });
                 builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
@@ -120,8 +152,10 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
                 builder.show();
 
                 return false;
+
             }
         });
+
     }
 
     @Override
@@ -168,7 +202,7 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
                 });
     }
     private void deletarConversa(String idDestinatarioBase64, String idUsuarioBase64, final Callback callback) {
-        DatabaseReference mensagensRef = FirebaseDatabase.getInstance().getReference("conversas");
+        DatabaseReference mensagensRef = FirebaseDatabase.getInstance().getReference("Conversas");
         mensagensRef.child(idUsuarioBase64)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override

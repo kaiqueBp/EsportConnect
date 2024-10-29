@@ -14,6 +14,15 @@
         android:backgroundTint="@color/padrao2"
         android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/idNomeExibir"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nome"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
         <ImageView
             android:id="@+id/imgChat"
             android:layout_width="120dp"
@@ -26,7 +35,14 @@
             android:layout_height="wrap_content"
             android:text="TextView"
             android:textColor="@color/white" />
-
+        <org.osmdroid.views.MapView
+            android:id="@+id/mapView"
+            android:layout_width="260dp"
+            android:layout_height="128dp"
+            app:layout_constraintBottom_toTopOf="@+id/imageView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
         <TextView
             android:id="@+id/textLoc"
             android:layout_width="match_parent"

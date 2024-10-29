@@ -2,8 +2,16 @@ package com.example.esporte.model;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.example.esporte.config.Base64Custom;
 import com.example.esporte.config.ConfiguracaoFirebase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -118,5 +126,4 @@ public class Usuarios implements Serializable {
             this.esportes.remove(esporte);
         }
     }
-
 }

@@ -126,8 +126,20 @@ public class MainActivity extends AppCompatActivity {
     public void verificaLogin(){
         auth = ConfiguracaoFirebase.getAutenticacao();
         if(auth.getCurrentUser() != null){
-            startActivity(new Intent(this, PrincipalActivity.class));
+            ConfiguracaoFirebase.carregarPerfil(new PerfilActivity.Callback() {
+                @Override
+                public void onDataLoaded() {
+
+                }
+
+                @Override
+                public void onError() {
+
+                }
+            });
+            startActivity(new Intent(MainActivity.this, PrincipalActivity.class));
             finish();
-        }
+
+        }else auth.signOut();
     }
 }

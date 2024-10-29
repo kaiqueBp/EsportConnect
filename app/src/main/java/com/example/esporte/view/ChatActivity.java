@@ -40,6 +40,8 @@ import com.example.esporte.config.Base64Custom;
 import com.example.esporte.config.ConfiguracaoFirebase;
 import com.example.esporte.config.MenssagensAdapter;
 import com.example.esporte.model.Conversa;
+import com.example.esporte.model.Endereco;
+import com.example.esporte.model.Grupo;
 import com.example.esporte.model.Mensagem;
 import com.example.esporte.model.Usuarios;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -51,6 +53,8 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -63,7 +67,8 @@ import java.util.UUID;
 
 public class ChatActivity extends BaseBotton {
     private Toolbar toolbar;
-    private Usuarios pessoa;
+    private Usuarios pessoa,usuarioLogado = new Usuarios();
+    private Usuarios usuarioAux;
     private ImageView foto;
     private TextView nome, mensagem;
     private String idRemetente, idDestinatario;
@@ -84,6 +89,7 @@ public class ChatActivity extends BaseBotton {
     private static final int REQUEST_LOCATION_PERMISSION = 100;
     private Double longi;
     private Double lati;
+    private Grupo grupo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +101,7 @@ public class ChatActivity extends BaseBotton {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
         foto = findViewById(R.id.idFt);
         nome = findViewById(R.id.idNm);
         mensagem = findViewById(R.id.editMenssagem);
@@ -107,9 +114,9 @@ public class ChatActivity extends BaseBotton {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        adapter = new MenssagensAdapter(menssagens,getApplicationContext());
+        adapter = new MenssagensAdapter(menssagens,this);
 
-          RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
@@ -125,8 +132,27 @@ public class ChatActivity extends BaseBotton {
                         if(lati != null && longi != null){
                             msg.setLatitude(lati);
                             msg.setLongitude(longi);
-                            Salvar(idRemetente, idDestinatario, msg);
-                            Salvar(idDestinatario, idRemetente, msg);
+
+                            if(pessoa != null){
+                                msg.setIdUsuario(idRemetente);
+                                msg.setMensagem(mensagem.getText().toString());
+
+                                Salvar(idRemetente, idDestinatario, msg);
+                                Salvar(idDestinatario, idRemetente, msg);
+                                SalvarConversa(idRemetente,idDestinatario,msg,pessoa);
+                                SalvarConversa(idDestinatario,idRemetente,msg,usuarioAux);
+                            }else {
+                                for (Usuarios membros : grupo.getMembros()) {
+                                    String idRem = Base64Custom.codificar(membros.getEmail());
+                                    String idDes = ConfiguracaoFirebase.IDUsuarioLogado();
+
+                                    msg.setIdUsuario(idDes);
+                                    msg.setMensagem(mensagem.getText().toString());
+                                    msg.setNome(usuarioLogado.getNome());
+                                    Salvar(idRem, idDestinatario, msg);
+                                    SalvarConversa(idRem, idDestinatario, msg, null);
+                                }
+                            }
                         }
                     }
 
@@ -138,12 +164,24 @@ public class ChatActivity extends BaseBotton {
             }
         });
 
-        Intent intent = getIntent();
-        pessoa = (Usuarios) intent.getSerializableExtra("usuarioCLicado");
-        getSupportActionBar().setTitle("");
-        nome.setText(pessoa.getNome());
-        Glide.with(this).load(pessoa.getFoto()).into(foto);
-        idDestinatario = pessoa.getIdUsuario();
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            if(extras.containsKey("grupoClicado")){
+                grupo = (Grupo) extras.getSerializable("grupoClicado");
+                getSupportActionBar().setTitle("");
+                nome.setText(grupo.getNome());
+                idDestinatario = grupo.getId();
+                Glide.with(this).load(grupo.getFoto()).into(foto);
+            }else{
+                pessoa = (Usuarios) extras.getSerializable("usuarioCLicado");
+                getSupportActionBar().setTitle("");
+                nome.setText(pessoa.getNome());
+                Glide.with(this).load(pessoa.getFoto()).into(foto);
+                idDestinatario = pessoa.getIdUsuario();
+            }
+
+        }
+
         database = ConfiguracaoFirebase.getFirebase();
         storage = ConfiguracaoFirebase.getFirestore();
         mensagemRef = database.child("Mensagens")
@@ -201,7 +239,7 @@ public class ChatActivity extends BaseBotton {
                 if (requestCode == SELECAO_CAMERA) {
                     // Imagem capturada pela câmera
                     imagem = (Bitmap) data.getExtras().get("data");
-                    imagemCamera.setImageBitmap(imagem);
+                    //imagemCamera.setImageBitmap(imagem);
 
                 } else if (requestCode == SELECAO_GALERIA) {
                     // Imagem selecionada da galeria
@@ -209,7 +247,7 @@ public class ChatActivity extends BaseBotton {
                     if (selectedImageUri != null) {
                         // Converte o Uri da galeria em Bitmap
                         imagem = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
-                        imagemCamera.setImageBitmap(imagem);
+                       // imagemCamera.setImageBitmap(imagem);
                     }
                 }
 
@@ -242,8 +280,26 @@ public class ChatActivity extends BaseBotton {
                                     msg.setMensagem("imagem.jpeg");
                                     msg.setImagem(url);
 
-                                    Salvar(idRemetente,idDestinatario,msg);
-                                    Salvar(idDestinatario,idRemetente,msg);
+                                    if(pessoa != null){
+                                        msg.setIdUsuario(idRemetente);
+                                        msg.setMensagem(mensagem.getText().toString());
+
+                                        Salvar(idRemetente, idDestinatario, msg);
+                                        Salvar(idDestinatario, idRemetente, msg);
+                                        SalvarConversa(idRemetente,idDestinatario,msg,pessoa);
+                                        SalvarConversa(idDestinatario,idRemetente,msg,usuarioAux);
+                                    }else {
+                                        for (Usuarios membros : grupo.getMembros()) {
+                                            String idRem = Base64Custom.codificar(membros.getEmail());
+                                            String idDes = ConfiguracaoFirebase.IDUsuarioLogado();
+
+                                            msg.setIdUsuario(idDes);
+                                            msg.setMensagem(mensagem.getText().toString());
+                                            msg.setNome(usuarioLogado.getNome());
+                                            Salvar(idRem, idDestinatario, msg);
+                                            SalvarConversa(idRem, idDestinatario, msg, null);
+                                        }
+                                    }
                                 }
                             });
                         }
@@ -265,24 +321,51 @@ public class ChatActivity extends BaseBotton {
         return super.onOptionsItemSelected(item);
     }
     public void enviarMensagem(View view){
-        if(!mensagem.getText().toString().isEmpty()){
-            Mensagem msg = new Mensagem();
-            msg.setIdUsuario(idRemetente);
-            msg.setMensagem(mensagem.getText().toString());
 
-            Salvar(idRemetente, idDestinatario, msg);
-            Salvar(idDestinatario, idRemetente, msg);
-            SalvarConversa(msg);
+        if(!mensagem.getText().toString().isEmpty()){
+            if(pessoa != null){
+                Mensagem msg = new Mensagem();
+                msg.setIdUsuario(idRemetente);
+                msg.setMensagem(mensagem.getText().toString());
+
+                Salvar(idRemetente, idDestinatario, msg);
+                Salvar(idDestinatario, idRemetente, msg);
+                SalvarConversa(idRemetente,idDestinatario,msg,pessoa);
+                SalvarConversa(idDestinatario,idRemetente,msg,usuarioAux);
+            }else{
+                for(Usuarios membros : grupo.getMembros()){
+                    String idRem = Base64Custom.codificar(membros.getEmail());
+                    String idDes = ConfiguracaoFirebase.IDUsuarioLogado();
+
+                    Mensagem msg = new Mensagem();
+                    msg.setIdUsuario(idDes);
+                    msg.setMensagem(mensagem.getText().toString());
+                    msg.setNome(usuarioLogado.getNome());
+                    Salvar(idRem, idDestinatario, msg);
+                    //Salvar(idDes, idDestinatario, msg);
+                    SalvarConversa(idRem, idDestinatario, msg, null);
+                    //SalvarConversa(idDes, idDestinatario, msg, null);
+                    //SalvarConversa(idDestinatario, idRem, msg, null);
+                }
+            }
+            mensagem.setText("");
+
         }else {
             //mensagem.setError("Digite uma mensagem");
         }
     }
-    private void SalvarConversa(Mensagem mensagem){
+    private void SalvarConversa(String idR, String idD, Mensagem mensagem, Usuarios pessoa){
         Conversa conversaRem = new Conversa();
-        conversaRem.setIdRemetente(idRemetente);
-        conversaRem.setIdDestinatario(idDestinatario);
+        conversaRem.setIdRemetente(idR);
+        conversaRem.setIdDestinatario(idD);
         conversaRem.setUltimaMensagem(mensagem.getMensagem());
-        conversaRem.setUsuarioExibicao(pessoa);
+
+        if(pessoa != null){
+            conversaRem.setUsuarioExibicao(pessoa);
+        }else {
+            conversaRem.setGrupo(grupo);
+            conversaRem.setIsGroup("true");
+        }
         conversaRem.Salvar();
 
     }
@@ -290,13 +373,46 @@ public class ChatActivity extends BaseBotton {
         DatabaseReference database = ConfiguracaoFirebase.getFirebase();;
         DatabaseReference mensagemRef = database.child("Mensagens");
         mensagemRef.child(idRemetente).child(idDestinatario).push().setValue(m);
-        mensagem.setText("");
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        if(usuarioAux == null){
+            UsuarioLocal(new Callback() {
+                @Override
+                public void onDataLoaded() {
+                    usuarioAux = usuarioLogado;
+                }
+
+                @Override
+                public void onError() {
+
+                }
+            });
+        }
+        menssagens.clear();
+        adapter.notifyDataSetChanged();
         RecuperarMenssagem();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if(usuarioAux == null){
+            UsuarioLocal(new Callback() {
+                @Override
+                public void onDataLoaded() {
+                    usuarioAux = usuarioLogado;
+                }
+
+                @Override
+                public void onError() {
+
+                }
+            });
+        }
     }
 
     @Override
@@ -391,6 +507,41 @@ public class ChatActivity extends BaseBotton {
                 Toast.makeText(this, "Permissão de localização necessária", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+    public void UsuarioLocal(final Callback callback){
+        //Usuarios usuario = new Usuarios();
+        FirebaseAuth auth = ConfiguracaoFirebase.getAutenticacao();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Usuarios");
+        DatabaseReference usuarioRef = ref.child(Base64Custom.codificar(auth.getCurrentUser().getEmail()));
+        usuarioRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    //usuario = new Usuarios();
+                    Endereco endereco = new Endereco();
+                    //  usuario = snapshot.getValue(Usuario.class);
+                    usuarioLogado.setIdUsuario(Base64Custom.codificar(auth.getCurrentUser().getEmail()));
+                    usuarioLogado.setNome(snapshot.child("nome").getValue(String.class));
+                    usuarioLogado.setFoto(snapshot.child("foto").getValue(String.class));
+                    usuarioLogado.setSexo(snapshot.child("sexo").getValue(String.class));
+                    usuarioLogado.setEmail(snapshot.child("email").getValue(String.class));
+                    ArrayList<String> esportes = new ArrayList<>();
+                    for (DataSnapshot esporteSnapshot : snapshot.child("esportes").getChildren()) {
+                        String esporte = esporteSnapshot.getValue(String.class);
+                        esportes.add(esporte);
+                    }
+                    usuarioLogado.setEsportes(esportes);
+                    endereco.setUf(snapshot.child("endereco").child("uf").getValue(String.class));
+                    endereco.setLocalidade(snapshot.child("endereco").child("localidade").getValue(String.class));
+                    usuarioLogado.setEndereco(endereco);
+                    callback.onDataLoaded();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     public interface Callback {
