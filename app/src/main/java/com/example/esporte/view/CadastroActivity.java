@@ -40,6 +40,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -223,6 +225,8 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                         public void onComplete(@NonNull Task<Uri> task) {
                             Uri url = task.getResult();
                             usuario.setFoto(url.toString());
+                            FirebaseUser user = auth.getCurrentUser();
+                            user.updateProfile(new UserProfileChangeRequest.Builder().setPhotoUri(url).build());
                             usuario.salvar();
                             Toast.makeText(CadastroActivity.this,url.toString(),Toast.LENGTH_LONG).show();
 

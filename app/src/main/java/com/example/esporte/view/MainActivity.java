@@ -124,19 +124,8 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
     public void verificaLogin(){
-        auth = ConfiguracaoFirebase.getAutenticacao();
-        if(auth.getCurrentUser() != null){
-            ConfiguracaoFirebase.carregarPerfil(new PerfilActivity.Callback() {
-                @Override
-                public void onDataLoaded() {
-
-                }
-
-                @Override
-                public void onError() {
-
-                }
-            });
+        auth = FirebaseAuth.getInstance();
+        if(auth.getCurrentUser().getEmail() != null){
             startActivity(new Intent(MainActivity.this, PrincipalActivity.class));
             finish();
 

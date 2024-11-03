@@ -35,6 +35,9 @@
         android:theme="@style/Theme.Esporte"
         tools:targetApi="31">
         <activity
+            android:name=".view.PerfilGrupoActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.CadastroGrupoActivity"
             android:exported="false" />
         <activity

@@ -182,6 +182,18 @@ public class ChatActivity extends BaseBotton {
 
         }
 
+
+        if(grupo != null){
+            nome.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(ChatActivity.this, PerfilGrupoActivity.class);
+                    intent.putExtra("perfilGrupo",grupo);
+                    startActivity(intent);
+                }
+            });
+        }
+
         database = ConfiguracaoFirebase.getFirebase();
         storage = ConfiguracaoFirebase.getFirestore();
         mensagemRef = database.child("Mensagens")
@@ -413,6 +425,8 @@ public class ChatActivity extends BaseBotton {
                 }
             });
         }
+        adapter.notifyDataSetChanged();
+        RecuperarMenssagem();
     }
 
     @Override

@@ -32,6 +32,7 @@ import java.util.ArrayList;
 public class ListarConversasActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ArrayList<Conversa> Listaconversa = new ArrayList<>();
+    private ArrayList<Conversa> apenasConversas = new ArrayList<>();
     private ListarConversaAdapter adapter;
     private DatabaseReference databaseRef;
     private DatabaseReference database;
@@ -69,8 +70,9 @@ public class ListarConversasActivity extends AppCompatActivity {
         criarGrupo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent intent = new Intent(ListarConversasActivity.this, CriarGrupoActivity.class);
-                intent.putExtra("lista", Listaconversa);
+                intent.putExtra("lista", apenasConversas);
                 startActivity(intent);
                 //Toast.makeText(ListarConversasActivity.this, "Criar Grupo", Toast.LENGTH_SHORT).show();
             }
@@ -106,6 +108,9 @@ public class ListarConversasActivity extends AppCompatActivity {
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Conversa conversa = snapshot.getValue(Conversa.class);
                 if (!Listaconversa.contains(conversa)) {
+                    if(!conversa.getIsGroup().equals("true")){
+                        apenasConversas.add(conversa);
+                    }
                     Listaconversa.add(conversa);
                     adapter.notifyDataSetChanged();
                 }

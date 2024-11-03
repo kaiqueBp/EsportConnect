@@ -37,6 +37,7 @@ public class Usuarios implements Serializable {
     }
     public void salvar(){
         DatabaseReference referencia = ConfiguracaoFirebase.getFirebase();
+        this.setSenha("");
         if (this.idUsuario != null) {
             referencia.child("Usuarios").child(this.idUsuario).setValue(this);
         } else {

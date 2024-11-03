@@ -51,10 +51,11 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class EditarActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    private Usuarios usuario = new Usuarios();
+    Usuarios usuario = new Usuarios();
     private Endereco endereco = new Endereco();
     private ImageView img;
     private EditText nome,cidade;
@@ -89,7 +90,7 @@ public class EditarActivity extends AppCompatActivity implements AdapterView.OnI
         auth = ConfiguracaoFirebase.getAutenticacao();
         Intent intent = getIntent();
         usuario = (Usuarios) getIntent().getSerializableExtra("usuario");
-
+        selectedEsportes = new ArrayList<>();
         ft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -227,7 +228,11 @@ public class EditarActivity extends AppCompatActivity implements AdapterView.OnI
     }
     public void EditarEsporte(View view){
         Intent intent = new Intent(this, ListarEsporteActivity.class);
-        intent.putExtra("esportes",usuario);
+        for(String esporte : usuario.getEsportes()){
+
+            selectedEsportes.add(esporte);
+        }
+        //intent.putExtra("esportes",selectedEsportes);
         startActivity(intent);
     }
     public static String padronizarTitulo(String str) {

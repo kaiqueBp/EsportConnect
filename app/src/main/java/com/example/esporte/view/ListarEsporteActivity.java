@@ -53,9 +53,10 @@ public class ListarEsporteActivity extends AppCompatActivity {
         esporte = findViewById(R.id.idLista);
         salvar = findViewById(R.id.btSalvarEsporte);
         //esport = new Esporte();
-        Intent intent = getIntent();
-        usuario = (Usuarios) getIntent().getSerializableExtra("esportes");
-        selectedEsportes = new ArrayList<>();
+        //Intent intent = getIntent();
+        Bundle bundle = getIntent().getExtras();
+        //usuario = (Usuarios) getIntent().getSerializableExtra("esportes");
+        //selectedEsportes = new ArrayList<>();
         pegarEsportes();
 
 //        if(usuario != null){
@@ -93,8 +94,8 @@ public class ListarEsporteActivity extends AppCompatActivity {
 //                }
 //            });
 //        }
-        if(usuario != null){
-            selectedEsportes.addAll(usuario.getEsportes()); // Adiciona os esportes já selecionados
+        if(bundle.containsKey("esportes")){
+            //selectedEsportes.addAll(usuario.getEsportes()); // Adiciona os esportes já selecionados
             pegarEportesSelecionados();
             esporte.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override

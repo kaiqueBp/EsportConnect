@@ -63,6 +63,7 @@ public class ConfiguracaoFirebase {
         FirebaseUser user = getUsuarioLogado();
         Usuarios usuario = new Usuarios();
         usuario.setEmail(user.getEmail());
+        usuario.setIdUsuario(ConfiguracaoFirebase.IDUsuarioLogado());
         usuario.setNome(user.getDisplayName());
         if(user.getPhotoUrl() == null){
             usuario.setFoto("");
