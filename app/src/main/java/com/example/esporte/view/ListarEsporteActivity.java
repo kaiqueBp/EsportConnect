@@ -1,5 +1,7 @@
 package com.example.esporte.view;
 
+import static com.example.esporte.view.EditarActivity.usuario;
+
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -38,7 +40,7 @@ public class ListarEsporteActivity extends AppCompatActivity {
     private Button salvar;
     private Esporte esport ;
     public static ArrayList<String> selectedEsportes;
-    private Usuarios usuario = new Usuarios();
+    //private Usuarios usuario = new Usuarios();
 
     @Override
     protected void onStart() {
@@ -94,7 +96,7 @@ public class ListarEsporteActivity extends AppCompatActivity {
 //                }
 //            });
 //        }
-        if(bundle.containsKey("esportes")){
+        if(usuario.getEsportes().size() > 0){
             //selectedEsportes.addAll(usuario.getEsportes()); // Adiciona os esportes já selecionados
             pegarEportesSelecionados();
             esporte.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -107,12 +109,14 @@ public class ListarEsporteActivity extends AppCompatActivity {
                         selectedItems.remove((Integer) position);
                         view.setBackgroundColor(Color.TRANSPARENT);
                         selectedEsportes.remove(esporteSelecionado);
+                        usuario.setEsportes(selectedEsportes);
                     } else {
                         // Adicionar o item à lista de selecionados
                         selectedItems.add(position);
                         view.setBackgroundColor(Color.GREEN);
                         if (!selectedEsportes.contains(esporteSelecionado)) {
                             selectedEsportes.add(esporteSelecionado);
+                            usuario.setEsportes(selectedEsportes);
                         }
                     }
                 }
@@ -144,6 +148,7 @@ public class ListarEsporteActivity extends AppCompatActivity {
                         view.setBackgroundColor(Color.TRANSPARENT);
                         // usuario.removerEsporte(lista.get(position));
                         selectedEsportes.remove(lista.get(position));
+                        usuario.setEsportes(selectedEsportes);
                     } else {
                         // Adicionar o item à lista de selecionados
                         selectedItems.add(position);
@@ -151,6 +156,7 @@ public class ListarEsporteActivity extends AppCompatActivity {
                         view.setBackgroundColor(Color.GREEN);
                         //usuario.adicionarEsporte(lista.get(position));
                         selectedEsportes.add(lista.get(position));
+                        usuario.setEsportes(selectedEsportes);
                     }
                     String esporteSelecionado = lista.get(position);
                     //a.setText(esporteSelecionado);

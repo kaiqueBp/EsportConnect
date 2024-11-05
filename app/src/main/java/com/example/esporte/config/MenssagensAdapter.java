@@ -105,7 +105,7 @@ public class MenssagensAdapter extends RecyclerView.Adapter<MenssagensAdapter.My
                 }
             });
         }
-        if(msg != null && img == null) {
+        if(msg != null && img == null && lati == null && longi == null) {
             holder.mensagem.setText(msg);
             holder.imagem.setVisibility(View.GONE);
             holder.localizacao.setVisibility(View.GONE);

@@ -64,6 +64,7 @@ public class CriarGrupoActivity extends AppCompatActivity {
             //setTitle(grupo.getNome());
             PegarUsuariosNaoSelecionados(grupo.getMembros(), grupo.getId());
         }else{
+            usuarios.clear();
             usuarios = (ArrayList<Conversa>) extras.getSerializable("lista");
             tamanho = usuarios.size();
             setarQuantidade();
@@ -161,11 +162,13 @@ public class CriarGrupoActivity extends AppCompatActivity {
                 }
                 for(DataSnapshot dados : snapshot.getChildren()){
                         idRem = dados.getKey();
-                        if(!membros.contains(idRem)){
+                        if(!membros.contains(idRem) && idRem != id){
                             Conversa conversaSelecionada = new Conversa();
                             conversaSelecionada = dados.getValue(Conversa.class);
-                           usuarios.add(dados.getValue(Conversa.class));
-                           auxiliar.add(conversaSelecionada.getUsuarioExibicao());
+                            if(conversaSelecionada.getIsGroup().equals("false")){
+                                usuarios.add(dados.getValue(Conversa.class));
+                                auxiliar.add(conversaSelecionada.getUsuarioExibicao());
+                            }
                         }
                 }
                 grupoAdapter.notifyDataSetChanged();

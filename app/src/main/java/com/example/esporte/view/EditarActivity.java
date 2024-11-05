@@ -55,7 +55,7 @@ import java.util.ArrayList;
 
 public class EditarActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    Usuarios usuario = new Usuarios();
+    public static Usuarios usuario = new Usuarios();
     private Endereco endereco = new Endereco();
     private ImageView img;
     private EditText nome,cidade;
@@ -271,7 +271,7 @@ public class EditarActivity extends AppCompatActivity implements AdapterView.OnI
 //                        usuario.setEstado(endereco.getUf());
                         usuario.setSexo(RadionButton());
                         usuario.setNome(nome.getText().toString());
-                        usuario.setEsportes(selectedEsportes);
+                        //usuario.setEsportes(selectedEsportes);
                         usuario.setEndereco(endereco);
                         atualizarUsuario();
 

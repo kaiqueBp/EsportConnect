@@ -1,10 +1,13 @@
 package com.example.esporte.view;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -12,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -40,7 +44,7 @@ public class PerfilActivity extends BaseBotton {
     private DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Usuarios");
     private Usuarios usuario = new Usuarios();
     private Endereco endereco;
-    private Button editar;
+    private Button editar, sugestao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +58,7 @@ public class PerfilActivity extends BaseBotton {
         sexo = findViewById(R.id.pSexo);
         cidade = findViewById(R.id.pCidade);
         editar = findViewById(R.id.btEdit);
+        sugestao = findViewById(R.id.IdSugestao);
 
         auth = ConfiguracaoFirebase.getAutenticacao();
         email.setText(auth.getCurrentUser().getEmail());
@@ -84,7 +89,54 @@ public class PerfilActivity extends BaseBotton {
                 // Tratar erro
             }
         });
+
+        sugestao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showInputDialog();
+            }
+        });
     }
+
+    private void showInputDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Digite o nome do esporte");
+
+        // Configurando o campo de entrada
+        final EditText input = new EditText(this);
+        builder.setView(input);
+
+        builder.setPositiveButton("Enviar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String esporte = input.getText().toString();
+                sendEmail(esporte);
+            }
+        });
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    private void sendEmail(String esporte) {
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+        emailIntent.setData(Uri.parse("mailto:kpbarros2@outlook.com")); // Substitua pelo seu e-mail
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Nome do Esporte");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, esporte);
+
+        // Verifica se há um aplicativo que pode enviar o e-mail
+        if (emailIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(emailIntent);
+        } else {
+            Toast.makeText(this, "Nenhum aplicativo de e-mail encontrado.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void carregarPerfil(final Callback callback){
         DatabaseReference usuarioRef = ref.child(Base64Custom.codificar(auth.getCurrentUser().getEmail()));
         usuarioRef.addListenerForSingleValueEvent(new ValueEventListener() {

@@ -62,6 +62,7 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
             }else{
                 holder.img.setImageResource(R.drawable.baseline_person_24);
             }
+            holder.msg.setText(conversa.getUltimaMensagem());
         }else{
             Usuarios usuario = conversa.getUsuarioExibicao();
             holder.nome.setText(usuario.getNome());
@@ -80,9 +81,17 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
                 Conversa conversa = conversas.get(holder.getAdapterPosition());
                 if(conversa.getIsGroup().equals("true")){
                     //Grupo grupo = conversa.getGrupo();
-                    Intent intent = new Intent(context, ChatActivity.class);
-                    intent.putExtra("grupoClicado", conversa.getGrupo());
-                    context.startActivity(intent);
+                    PegarGrupo(conversa.getGrupo().getId(), new Callback() {
+                        @Override
+                        public void onDataLoaded() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    });
                 }else{
                     int posicao = holder.getAdapterPosition();
                     Usuarios usuarioCLicado = conversas.get(posicao).getUsuarioExibicao();
@@ -225,6 +234,23 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
                         callback.onError();
                     }
                 });
+    }
+    private  void PegarGrupo(String idGrupo, final Callback callback){
+        DatabaseReference mensagensRef = FirebaseDatabase.getInstance().getReference("grupos");
+        mensagensRef.child(idGrupo).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Grupo grupo = snapshot.getValue(Grupo.class);
+                Intent intent = new Intent(context, ChatActivity.class);
+                intent.putExtra("grupoClicado", grupo);
+                context.startActivity(intent);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
     public interface Callback {
         void onDataLoaded();

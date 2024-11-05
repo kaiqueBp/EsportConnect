@@ -190,6 +190,7 @@ public class ChatActivity extends BaseBotton {
                     Intent intent = new Intent(ChatActivity.this, PerfilGrupoActivity.class);
                     intent.putExtra("perfilGrupo",grupo);
                     startActivity(intent);
+                    finish();
                 }
             });
         }
@@ -407,11 +408,16 @@ public class ChatActivity extends BaseBotton {
         menssagens.clear();
         adapter.notifyDataSetChanged();
         RecuperarMenssagem();
+
+
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
+        menssagens.clear();
+        adapter.notifyDataSetChanged();
+    //    RecuperarMenssagem();
         if(usuarioAux == null){
             UsuarioLocal(new Callback() {
                 @Override
@@ -425,8 +431,6 @@ public class ChatActivity extends BaseBotton {
                 }
             });
         }
-        adapter.notifyDataSetChanged();
-        RecuperarMenssagem();
     }
 
     @Override
@@ -436,12 +440,14 @@ public class ChatActivity extends BaseBotton {
     }
 
     private void RecuperarMenssagem(){
+        menssagens.clear();
         childEventListener = mensagemRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Mensagem msg = snapshot.getValue(Mensagem.class);
                 menssagens.add(msg);
                 adapter.notifyDataSetChanged();
+
             }
 
             @Override

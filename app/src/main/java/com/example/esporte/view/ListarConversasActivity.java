@@ -102,8 +102,9 @@ public class ListarConversasActivity extends AppCompatActivity {
     }
 
     public void RecuperarConversas(){
-
+        apenasConversas.clear();
         childEventListener = database.addChildEventListener(new ChildEventListener() {
+
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Conversa conversa = snapshot.getValue(Conversa.class);

@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="8dp"
     tools:context=".view.PerfilGrupoActivity">
 
     <ImageView
@@ -36,21 +37,14 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/textView14"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableStart="@drawable/remove_pessoa"
-            android:text="Remover"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/idPesGrupo"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:padding="8dp">
 
     </androidx.recyclerview.widget.RecyclerView>
 </LinearLayout>
