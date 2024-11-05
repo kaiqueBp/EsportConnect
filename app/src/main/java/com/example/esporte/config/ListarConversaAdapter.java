@@ -119,6 +119,7 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
                         if(conversa.getUsuarioExibicao() == null){
                             idRem = conversa.getIdRemetente();
                             idDest = conversa.getIdDestinatario();
+                            notifyItemRemoved(position);
                         }else{
                             Usuarios usuarioCLicado = conversas.get(posicao).getUsuarioExibicao();
 
@@ -126,6 +127,7 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
                             String usuarioPessaoal = auth.getCurrentUser().getEmail();
                             idDest = usuarioCLicado.getIdUsuario();
                             idRem = Base64Custom.codificar(usuarioPessaoal);
+                            notifyItemRemoved(position);
                         }
 
 

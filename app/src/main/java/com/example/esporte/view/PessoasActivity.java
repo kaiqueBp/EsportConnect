@@ -230,6 +230,8 @@ public class PessoasActivity extends AppCompatActivity {
     public void Limpar(View view){
         PessoasAdapter adapter = new PessoasAdapter(arrayUsuario, PessoasActivity.this);
         recyclerView.setAdapter(adapter);
+        spinnerSex.setSelection(0);
+        spinnerState.setSelection(0);
     }
 
     private ArrayList<String> getCidades(String estadoSelecionado) {

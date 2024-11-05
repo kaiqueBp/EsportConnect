@@ -147,7 +147,7 @@ public class ListarEsporteActivity extends AppCompatActivity {
                         // Muda a cor do item para a cor original
                         view.setBackgroundColor(Color.TRANSPARENT);
                         // usuario.removerEsporte(lista.get(position));
-                        selectedEsportes.remove(lista.get(position));
+                        //selectedEsportes.remove(lista.get(position));
                         usuario.setEsportes(selectedEsportes);
                     } else {
                         // Adicionar o item à lista de selecionados
@@ -155,7 +155,7 @@ public class ListarEsporteActivity extends AppCompatActivity {
                         // Muda a cor do item para a cor de seleção
                         view.setBackgroundColor(Color.GREEN);
                         //usuario.adicionarEsporte(lista.get(position));
-                        selectedEsportes.add(lista.get(position));
+                        //selectedEsportes.add(lista.get(position));
                         usuario.setEsportes(selectedEsportes);
                     }
                     String esporteSelecionado = lista.get(position);

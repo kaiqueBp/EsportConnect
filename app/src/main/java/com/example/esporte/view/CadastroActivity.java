@@ -159,7 +159,7 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                             String idUsuario = Base64Custom.codificar(usuario.getEmail());
                             usuario.setIdUsuario(idUsuario);
                             usuario.setFoto(imgUrl);
-                            usuario.salvar();
+                            //usuario.salvar();
 
                             Toast.makeText(CadastroActivity.this, "Cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
                             abrirTelaPrincipal();

@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        verificaLogin();
+        //verificaLogin();
         setContentView(R.layout.activity_main);
         FirebaseApp.initializeApp(this);
 
@@ -123,12 +123,12 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, PrincipalActivity.class));
         finish();
     }
-    public void verificaLogin(){
-        auth = FirebaseAuth.getInstance();
-        if(auth.getCurrentUser().getEmail() != null){
-            startActivity(new Intent(MainActivity.this, PrincipalActivity.class));
-            finish();
-
-        }else auth.signOut();
-    }
+//    public void verificaLogin(){
+//        auth = FirebaseAuth.getInstance();
+//        if(auth.getCurrentUser().getEmail() != null){
+//            startActivity(new Intent(MainActivity.this, PrincipalActivity.class));
+//            finish();
+//
+//        }else {}auth.signOut();
+//    }
 }

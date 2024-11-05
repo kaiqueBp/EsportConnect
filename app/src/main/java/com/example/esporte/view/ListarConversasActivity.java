@@ -22,6 +22,7 @@ import com.example.esporte.config.Base64Custom;
 import com.example.esporte.config.ConfiguracaoFirebase;
 import com.example.esporte.config.ListarConversaAdapter;
 import com.example.esporte.model.Conversa;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -39,6 +40,7 @@ public class ListarConversasActivity extends AppCompatActivity {
     private ChildEventListener childEventListener;
     private Toolbar toolbarConversa;
     private View criarGrupo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +53,7 @@ public class ListarConversasActivity extends AppCompatActivity {
         });
         criarGrupo = findViewById(R.id.idCriarGrupo);
         toolbarConversa = findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbarConversa);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

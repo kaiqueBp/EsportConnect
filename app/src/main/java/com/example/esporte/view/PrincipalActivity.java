@@ -58,6 +58,7 @@ public class PrincipalActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        verificaLogin();
         pesquisa = findViewById(R.id.idPes);
         perfil = findViewById(R.id.idPerfil);
         navBotton = findViewById(R.id.idBotton);
@@ -160,6 +161,15 @@ public class PrincipalActivity extends AppCompatActivity {
         });
 
 
+    }
+    public void verificaLogin(){
+        FirebaseAuth auth = ConfiguracaoFirebase.getAutenticacao();
+        auth = FirebaseAuth.getInstance();
+        if(auth.getCurrentUser() == null){
+            Intent intent = new Intent(PrincipalActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
     private void loadEsportes(final Callback callback) {
         DatabaseReference database = ConfiguracaoFirebase.getFirebase();
