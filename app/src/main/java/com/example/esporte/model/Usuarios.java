@@ -122,9 +122,5 @@ public class Usuarios implements Serializable {
         }
         this.esportes.add(esporte.toString());
     }
-    public void removerEsporte(String esporte) {
-        if (this.esportes != null) {
-            this.esportes.remove(esporte);
-        }
-    }
+
 }

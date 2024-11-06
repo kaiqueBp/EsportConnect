@@ -26,6 +26,7 @@
         android:id="@+id/pNome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="35dp"
         android:layout_marginTop="16dp"
         android:text="Nome" />
 
@@ -33,6 +34,7 @@
         android:id="@+id/pEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="35dp"
         android:layout_marginTop="8dp"
         android:text="Email" />
 
@@ -40,6 +42,7 @@
         android:id="@+id/pSexo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="35dp"
         android:layout_marginTop="8dp"
         android:text="Sexo" />
 
@@ -47,6 +50,7 @@
         android:id="@+id/pCidade"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="35dp"
         android:layout_marginTop="8dp"
         android:text="Cidade" />
 
@@ -60,34 +64,44 @@
 
     <!-- Botão de Editar, centralizado na parte inferior -->
 
+    <Button
+        android:id="@+id/btEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:text="Editar" />
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="123dp"
         android:layout_marginTop="20dp"
         android:orientation="horizontal"
         android:padding="10dp">
 
         <Button
+            android:id="@+id/button3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginLeft="8dp"
+            android:onClick="Sair"
+            android:text="Sair" />
+
+        <!-- Adiciona um espaço entre os botões -->
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
             android:id="@+id/IdSugestao"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sugestões" />
+            android:layout_marginRight="8dp"
+            android:text="Sugestões"
+            android:textAlignment="viewEnd" />
 
-        <Button
-            android:id="@+id/btEdit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:text="Editar" />
     </LinearLayout>
-
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginBottom="76dp"
-        android:onClick="Sair"
-        android:text="Sair" />
 
 </LinearLayout>

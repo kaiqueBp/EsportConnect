@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.PerfilFragment">
+
+    <LinearLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".view.PerfilActivity">
+
+
+        <!-- Centraliza a imagem no topo -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/idFt"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="52dp"
+            android:background="@color/padrao2"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/Base.Theme.Esporte"
+            app:srcCompat="@drawable/ic_launcher_background" />
+
+        <!-- Alinha os TextViews abaixo da imagem, começando com o nome -->
+        <TextView
+            android:id="@+id/pNome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="35dp"
+            android:layout_marginTop="16dp"
+            android:text="Nome" />
+
+        <TextView
+            android:id="@+id/pEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="35dp"
+            android:layout_marginTop="8dp"
+            android:text="Email" />
+
+        <TextView
+            android:id="@+id/pSexo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="35dp"
+            android:layout_marginTop="8dp"
+            android:text="Sexo" />
+
+        <TextView
+            android:id="@+id/pCidade"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="35dp"
+            android:layout_marginTop="8dp"
+            android:text="Cidade" />
+
+        <!-- Lista de esportes -->
+        <ListView
+            android:id="@+id/pEsportes"
+            android:layout_width="345dp"
+            android:layout_height="213dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp" />
+
+        <!-- Botão de Editar, centralizado na parte inferior -->
+
+        <Button
+            android:id="@+id/btEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:text="Editar" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="123dp"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginLeft="8dp"
+                android:onClick="Sair"
+                android:text="Sair" />
+
+            <!-- Adiciona um espaço entre os botões -->
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/IdSugestao"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:text="Sugestões"
+                android:textAlignment="viewEnd" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

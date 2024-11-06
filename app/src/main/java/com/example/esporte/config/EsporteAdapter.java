@@ -2,6 +2,7 @@ package com.example.esporte.config;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,13 +10,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.FragmentManager;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.esporte.R;
 import com.example.esporte.model.Esporte;
 import com.example.esporte.view.PessoasActivity;
+import com.example.esporte.view.PessoasFragment;
 
 
 import java.util.ArrayList;
@@ -24,6 +31,7 @@ public class EsporteAdapter extends RecyclerView.Adapter<EsporteAdapter.ViewHold
 
     private ArrayList<Esporte> arrayEsporte;
     private Context context;
+    private PessoasFragment pessoasFragment = new PessoasFragment();
 
     public EsporteAdapter(ArrayList<Esporte> arrayEsporte, Context context) {
         this.arrayEsporte = arrayEsporte;
@@ -49,9 +57,12 @@ public class EsporteAdapter extends RecyclerView.Adapter<EsporteAdapter.ViewHold
             @Override
             public void onClick(View v) {
                 //Toast.makeText(context, "Clicou em " + holder.nomeEsporte.getText(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(context, PessoasActivity.class);
-                intent.putExtra("nome", holder.nomeEsporte.getText());
-                context.startActivity(intent);
+                Bundle bundle = new Bundle();
+                bundle.putString("nome", holder.nomeEsporte.getText().toString());
+
+                NavController navController = Navigation.findNavController(holder.itemView);
+                navController.navigate(R.id.action_navHome_to_pessoasFragment2, bundle);
+
             }
         });
     }

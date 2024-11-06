@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_nav"
+    app:startDestination="@+id/navHome">
+    <fragment
+        android:id="@+id/navHome"
+        android:name="com.example.esporte.view.PrincipalFragment"
+        android:label="fragment_teste"
+        tools:layout="@layout/fragment_teste" >
+        <action
+            android:id="@+id/action_navHome_to_pessoasFragment2"
+            app:destination="@id/pessoasFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/navPerfil"
+        android:name="com.example.esporte.view.PerfilFragment"
+        android:label="fragment_perfil"
+        tools:layout="@layout/fragment_perfil" />
+    <fragment
+        android:id="@+id/navConversa"
+        android:name="com.example.esporte.view.ConversasFragment"
+        android:label="fragment_conversas"
+        tools:layout="@layout/fragment_conversas" />
+    <fragment
+        android:id="@+id/pessoasFragment"
+        android:name="com.example.esporte.view.PessoasFragment"
+        android:label="fragment_pessoas"
+        tools:layout="@layout/fragment_pessoas" >
+        <action
+            android:id="@+id/action_pessoasFragment_to_navHome"
+            app:destination="@id/navHome" />
+    </fragment>
+</navigation>
