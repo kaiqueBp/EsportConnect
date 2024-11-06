@@ -39,7 +39,7 @@ public class ListarEsporteActivity extends AppCompatActivity {
     private ListView esporte;
     private Button salvar;
     private Esporte esport ;
-    public static ArrayList<String> selectedEsportes;
+    public ArrayList<String> selectedEsportes = new ArrayList<>();
     //private Usuarios usuario = new Usuarios();
 
     @Override
@@ -61,43 +61,9 @@ public class ListarEsporteActivity extends AppCompatActivity {
         //selectedEsportes = new ArrayList<>();
         pegarEsportes();
 
-//        if(usuario != null){
-//            pegarEportesSelecionados();
-//            for (int i = 0; i < lista.size(); i++) {
-//                String esporteAtual = lista.get(i);
-//                if (selectedEsportes.contains(esporteAtual)) {
-//                    // Adicionar a posição na lista de itens selecionados
-//                    selectedItems.add(i);
-//                    // Mudar a cor de fundo do item para mostrar que está selecionado
-//                    View item = esporte.getChildAt(i);
-//                    if (item != null) {
-//                        item.setBackgroundColor(Color.GREEN);
-//                    }
-//                }
-//            }
-//
-//            esporte.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                @Override
-//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                    String esporteSelecionado = lista.get(position);
-//
-//                    if (selectedItems.contains(position)) {
-//                        // Remover o item da lista de selecionados
-//                        selectedItems.remove((Integer) position);
-//                        view.setBackgroundColor(Color.TRANSPARENT);
-//                        usuario.getEsportes().remove(esporteSelecionado);
-//                    } else {
-//                        // Adicionar o item à lista de selecionados
-//                        selectedItems.add(position);
-//                        view.setBackgroundColor(Color.GREEN);
-//                        usuario.getEsportes().add(esporteSelecionado);
-//                    }
-//                    // Atualiza a lista de esportes do usuário conforme a seleção
-//                }
-//            });
-//        }
+
         if(usuario.getEsportes().size() > 0){
-            //selectedEsportes.addAll(usuario.getEsportes()); // Adiciona os esportes já selecionados
+            selectedEsportes.addAll(usuario.getEsportes()); // Adiciona os esportes já selecionados
             pegarEportesSelecionados();
             esporte.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -147,7 +113,7 @@ public class ListarEsporteActivity extends AppCompatActivity {
                         // Muda a cor do item para a cor original
                         view.setBackgroundColor(Color.TRANSPARENT);
                         // usuario.removerEsporte(lista.get(position));
-                        //selectedEsportes.remove(lista.get(position));
+                        selectedEsportes.remove(lista.get(position));
                         usuario.setEsportes(selectedEsportes);
                     } else {
                         // Adicionar o item à lista de selecionados
@@ -155,7 +121,7 @@ public class ListarEsporteActivity extends AppCompatActivity {
                         // Muda a cor do item para a cor de seleção
                         view.setBackgroundColor(Color.GREEN);
                         //usuario.adicionarEsporte(lista.get(position));
-                        //selectedEsportes.add(lista.get(position));
+                        selectedEsportes.add(lista.get(position));
                         usuario.setEsportes(selectedEsportes);
                     }
                     String esporteSelecionado = lista.get(position);

@@ -1,6 +1,6 @@
 package com.example.esporte.view;
 
-import static com.example.esporte.view.ListarEsporteActivity.selectedEsportes;
+
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -120,7 +120,7 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                      usuario.setEmail(sEmail);
                      usuario.setSenha(sSenha);
                      usuario.setSexo(RadionButton());
-                     usuario.setEsportes(selectedEsportes);
+                     //usuario.setEsportes(selectedEsportes);
                      validar();
 
                  }else{
@@ -242,8 +242,8 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
     public void validar(){
         state = "";
         String city = padronizarTitulo(text.getText().toString());;
-        state = spinner.getSelectedItem().toString();
-        state = endereco.getEstado(state);
+        state = spinner.getSelectedItem().toString().toLowerCase();
+        //state = endereco.getEstado(state);
         Toast.makeText(this, "Estado selecionado: " + city, Toast.LENGTH_SHORT).show();
         if(city.isEmpty() || state == "Selecione um estado"){
             Toast.makeText(this, "Informe uma cidade e um estado", Toast.LENGTH_SHORT).show();
@@ -315,10 +315,9 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
 
         @Override
         protected String doInBackground(String... params) {
-            String city = params[0];
             String state = params[1]; // adicionado para receber a sigla do estado
             try {
-                String response = NominatimApi.searchCity(city, state);
+                String response = NominatimApi.searchCity(state);
                 return response;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -329,58 +328,30 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
         @Override
         protected void onPostExecute(String response) {
             int j =0;
-            int k =0;
             Log.d("ValidateCityTask", "Name: " + response);
             if (response != null) {
                 Log.d("ValidateCityTask", "Resposta: " + response);
                 try {
                     JSONArray jsonArray = new JSONArray(response);
                     for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        String placeId = jsonObject.getString("place_id");
-                        String name = jsonObject.getString("name");
-                        String displayName = jsonObject.getString("display_name");
-                        double lat = jsonObject.getDouble("lat");
-                        double lon = jsonObject.getDouble("lon");
-                        String dis = jsonObject.getString("display_name");
-                        String[] parts = dis.split(", ");
-//                        String country = parts[parts.length - 1];
-//                        String state = parts[parts.length - 2];
-                        Log.d("ValidateCityTask", "Name: " + name);
-                        Log.d("ValidateCityTask", "Display Name: " + displayName);
-//                        if(country.equals("Brasil")){
-//                            j++;
-//                            Toast.makeText(mActivity, "Cidade válida", Toast.LENGTH_SHORT).show();
-//                            Log.d("ValidateCityTask", "Name: " + name);
-//                            //Log.d("ValidateCityTask", "Estado: " + state);
-//                            Log.d("ValidateCityTask", "Display Name: " + displayName);
-//
-                        String[] items = displayName.split(", ");
-                        for (String item : items) {
-                            item = padronizarTitulo(item);
-                            if (item.equals(padronizarTitulo(state))) {
-                                j++;
-                                //System.out.println("Encontrei uma correspondência: " + item);
-                            }else if(item.equals(padronizarTitulo(text.getText().toString())))
-                                k++;
+                        String cidadeInfo = jsonArray.getString(i);
+
+                        String[] partes = cidadeInfo.split(":");
+                        String codigoCidade = partes[0];
+                        String nomeCidade = partes[1];
+
+                        if(padronizarTitulo(nomeCidade).equals(padronizarTitulo(text.getText().toString()))){
+                            j++;
                         }
-//
-//                        }else Toast.makeText(mActivity, "Cidade inválida", Toast.LENGTH_SHORT).show();
-//                        // Faça algo com essas informações
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Toast.makeText(mActivity, "Erro ao parsear JSON", Toast.LENGTH_SHORT).show();
                     // Handle JSON parsing error
                 }
-                if (j > 0 && k > 0) {
+                if (j > 0 ) {
                     SalvarFoto();
                     endereco.setLocalidade(text.getText().toString().toLowerCase().replace(" ", ""));
-                    endereco.setUf(spinner.getSelectedItem().toString());
-                    callback.onCityValidated(true, endereco);
-                }  else if(j>=4){
-                    SalvarFoto();
-                    endereco.setLocalidade(text.getText().toString());
                     endereco.setUf(spinner.getSelectedItem().toString());
                     callback.onCityValidated(true, endereco);
                 }else {
@@ -388,7 +359,6 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                     //CadastroActivity.this.restartActivity();
                 }
                 j=0;
-                k=0;
             }
         }
     }

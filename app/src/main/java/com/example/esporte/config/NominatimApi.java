@@ -7,19 +7,21 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class NominatimApi {
-    private static final String API_URL = "https://nominatim.openstreetmap.org/search";
-    private static final String FORMAT = "json";
+    private static final String API_URL = "http://educacao.dadosabertosbr.org/api/cidades/";
 
-    public static String searchCity(String city, String estado) throws IOException {
+    public static String searchCity(String estado) throws IOException {
         OkHttpClient client = new OkHttpClient();
 
-        String cityEncoded = URLEncoder.encode(city, "UTF-8");
         String estadoEncoded = URLEncoder.encode(estado, "UTF-8");
-
         Request request = new Request.Builder()
-                .url(API_URL + "?q=" + cityEncoded +"&"+estadoEncoded+ "&format=" + FORMAT)
+                .url(API_URL + estadoEncoded)
                 .build();
+
         Response response = client.newCall(request).execute();
+
+        if (!response.isSuccessful()) {
+            throw new IOException("Unexpected code " + response);
+        }
 
         return response.body().string();
     }
