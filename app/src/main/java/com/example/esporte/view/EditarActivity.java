@@ -2,6 +2,7 @@ package com.example.esporte.view;
 
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -30,6 +32,7 @@ import com.bumptech.glide.Glide;
 import com.example.esporte.R;
 import com.example.esporte.config.Base64Custom;
 import com.example.esporte.config.ConfiguracaoFirebase;
+import com.example.esporte.config.ListarConversaAdapter;
 import com.example.esporte.config.NominatimApi;
 import com.example.esporte.config.ValidateCityCallback;
 import com.example.esporte.model.Endereco;
@@ -67,7 +70,9 @@ public class EditarActivity extends AppCompatActivity implements AdapterView.OnI
     private Button editar,ft;
     private static final int REQUEST_IMAGE_SELECT = 200;
     private Uri selectedImageUri;
+    private String urlImagem;
     private DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Usuarios");
+    private String address;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -182,39 +187,43 @@ public class EditarActivity extends AppCompatActivity implements AdapterView.OnI
             img.buildDrawingCache();
             Bitmap bitmap = img.getDrawingCache();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG,100,baos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG,80,baos);
             byte[] dadosImagem = baos.toByteArray();
             // Salvar a imagem no Firebase Storage
-            StorageReference imagemRef = FirebaseStorage.getInstance().getReference();
+
+            StorageReference imagemRef = ConfiguracaoFirebase.getFirestore();
             StorageReference image = imagemRef.child("imagens");
-            StorageReference imgRef = image.child(nome.getText().toString());
+            StorageReference imgRef = image.child(Base64Custom.codificar(usuario.getEmail()));
+
+            ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("Atualizando Cadastro..");
+            progressDialog.setCancelable(false); // Prevent cancellation
+            progressDialog.show();
 
             UploadTask up = imgRef.putBytes(dadosImagem);
-            up.addOnFailureListener(EditarActivity.this, new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(EditarActivity.this,"Erro ao salvar a Imagem",Toast.LENGTH_LONG).show();
-                }
-            }).addOnSuccessListener(EditarActivity.this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            up.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    imgRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Uri> task) {
-                            Uri url = task.getResult();
-                            usuario.setFoto(url.toString());
-                            usuario.salvar();
-                            Intent intent = new Intent(EditarActivity.this, PerfilActivity.class);
-                            finish();
-                            Toast.makeText(EditarActivity.this,url.toString(),Toast.LENGTH_LONG).show();
-
-                        }
-                    });
-                    Toast.makeText(EditarActivity.this,"Imagem Salva com Sucesso",Toast.LENGTH_LONG).show();
+                    PegarImagem();
                 }
             });
         }
-
+    }
+    public void PegarImagem(){
+        String caminhoImagem = "imagens/"+Base64Custom.codificar(usuario.getEmail());
+        StorageReference imagemRef = ConfiguracaoFirebase.getFirestore();
+        StorageReference ref = imagemRef.child(caminhoImagem);
+        ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                urlImagem = uri.toString();
+                usuario.setFoto(urlImagem);
+                usuario.salvar();
+                Intent intent = new Intent(EditarActivity.this, PerfilActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
     public String RadionButton(){
         if(masculino.isChecked()){
@@ -250,22 +259,19 @@ public class EditarActivity extends AppCompatActivity implements AdapterView.OnI
         String city = padronizarTitulo(cidade.getText().toString());;
         state = estado.getSelectedItem().toString().toLowerCase();
         //state = endereco.getEstado(state);
-        Toast.makeText(this, "Estado selecionado: " + city, Toast.LENGTH_SHORT).show();
         if(city.isEmpty() || state == "Selecione um estado"){
             Toast.makeText(this, "Informe uma cidade e um estado", Toast.LENGTH_SHORT).show();
             return;
         }else {
+
             ValidateCityTask task = new ValidateCityTask(this, new ValidateCityCallback() {
                 @Override
                 public void onCityValidated(boolean isValid, Endereco endereco) {
                     if (isValid) {
-                        //DeletarFoto();
-
                         usuario.setSexo(RadionButton());
                         usuario.setNome(nome.getText().toString());
                         usuario.setEndereco(endereco);
                         atualizarUsuario();
-
                     } else {
                         // Cidade inválida, mostrar mensagem de erro
 
@@ -294,9 +300,13 @@ public class EditarActivity extends AppCompatActivity implements AdapterView.OnI
             String state = params[1]; // adicionado para receber a sigla do estado
             try {
                 String response = NominatimApi.searchCity(state);
+                Log.d("ValidateCityTask", "Response: " + response);
+                //Toast.makeText(mActivity, "Cidade encontrada", Toast.LENGTH_SHORT).show();
                 return response;
             } catch (IOException e) {
                 e.printStackTrace();
+                Log.d("ValidateCityTask", "Erro ao buscar cidade: " + e.getMessage());
+                //Toast.makeText(mActivity, "Erro ao buscar cidade", Toast.LENGTH_SHORT).show();
                 return null;
             }
         }
@@ -309,34 +319,35 @@ public class EditarActivity extends AppCompatActivity implements AdapterView.OnI
                 Log.d("ValidateCityTask", "Resposta: " + response);
                 try {
                     JSONArray jsonArray = new JSONArray(response);
-                    String cidadeInputPadronizado = padronizarTitulo(cidade.getText().toString());
+                    String cidadePadronizado = padronizarTitulo(cidade.getText().toString());
+
                     for (int i = 0; i < jsonArray.length(); i++) {
-                        String cidadeInfo = jsonArray.getString(i);
-                        int separatorIndex = cidadeInfo.indexOf(":");
-
-                        // Extrair o nome da cidade após o separador ":"
-                        String nomeCidade = cidadeInfo.substring(separatorIndex + 1);
-
-                        if (padronizarTitulo(nomeCidade).equals(cidadeInputPadronizado)) {
-                            j++;
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        String nome = jsonObject.getString("nome");
+                        nome = padronizarTitulo(nome);
+                        if (nome.equals(cidadePadronizado)) {
+                            j =1;
+                            DeletarFoto();
+                            SalvarFoto();
+                            endereco.setLocalidade(cidade.getText().toString().toUpperCase());
+                            endereco.setUf(estado.getSelectedItem().toString());
+                            callback.onCityValidated(true, endereco);
+                            break;
                         }
+                    }
+                    if (j == 0) {
+                        Log.d("ValidateCityTask", "Cidade não encontrada");
+//                        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+//                        builder.setTitle("Cidade não encontrada");
+
+                        Toast.makeText(EditarActivity.this, "Cidade inválida ou Estado inválido", Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Toast.makeText(mActivity, "Erro ao parsear JSON", Toast.LENGTH_SHORT).show();
                     // Handle JSON parsing error
                 }
-                if (j > 0) {
-                    DeletarFoto();
-                    SalvarFoto();
-                    endereco.setLocalidade(cidade.getText().toString());
-                    endereco.setUf(estado.getSelectedItem().toString());
-                    callback.onCityValidated(true, endereco);
-                } else {
-                    Toast.makeText(EditarActivity.this, "Cidade inválida ou Estado inválido", Toast.LENGTH_SHORT).show();
-                    //CadastroActivity.this.restartActivity();
-                }
-                j = 0;
+
             }
         }
     }

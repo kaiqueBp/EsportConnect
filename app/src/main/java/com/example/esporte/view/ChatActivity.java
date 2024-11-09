@@ -171,13 +171,22 @@ public class ChatActivity extends BaseBotton {
                 getSupportActionBar().setTitle("");
                 nome.setText(grupo.getNome());
                 idDestinatario = grupo.getId();
-                Glide.with(this).load(grupo.getFoto()).into(foto);
+
+                if(grupo.getFoto() != null)
+                    Glide.with(this).load(grupo.getFoto()).into(foto);
+                else{
+                    foto.setImageResource(R.drawable.grupo_padrao);
+                }
             }else{
                 pessoa = (Usuarios) extras.getSerializable("usuarioCLicado");
                 getSupportActionBar().setTitle("");
                 nome.setText(pessoa.getNome());
-                Glide.with(this).load(pessoa.getFoto()).into(foto);
                 idDestinatario = pessoa.getIdUsuario();
+
+                if(pessoa.getFoto() != null)
+                    Glide.with(this).load(pessoa.getFoto()).into(foto);
+                else
+                    foto.setImageResource(R.drawable.usuario_padrao);
             }
 
         }

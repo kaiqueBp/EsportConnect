@@ -29,19 +29,6 @@
                 android:textSize="34sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/idPerfil"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:layout_marginBottom="12dp"
-                android:layout_weight="1"
-                android:paddingRight="8dp"
-                android:text="Perfil"
-                android:textAlignment="viewEnd"
-                android:textSize="30sp"
-                android:textStyle="bold" />
-
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout

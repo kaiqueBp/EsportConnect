@@ -45,7 +45,7 @@ public class PerfilFragment extends Fragment {
     private DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Usuarios");
     private Usuarios usuario = new Usuarios();
     private Endereco endereco;
-    private Button editar, sugestao;
+    private Button editar, sugestao, sair;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,7 +67,7 @@ public class PerfilFragment extends Fragment {
         cidade = view.findViewById(R.id.pCidade);
         editar = view.findViewById(R.id.btEdit);
         sugestao = view.findViewById(R.id.IdSugestao);
-
+        sair =  view.findViewById(R.id.btSair);
         auth = ConfiguracaoFirebase.getAutenticacao();
         email.setText(auth.getCurrentUser().getEmail());
 
@@ -80,7 +80,17 @@ public class PerfilFragment extends Fragment {
             }
         });
 
-        carregarPerfil(new PerfilActivity.Callback() {
+        sair.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                auth.signOut();
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+                startActivity(intent);
+                getActivity().finish();
+            }
+        });
+
+        carregarPerfil(new Callback() {
             @Override
             public void onDataLoaded() {
 
@@ -147,7 +157,7 @@ public class PerfilFragment extends Fragment {
         }
     }
 
-    private void carregarPerfil(final PerfilActivity.Callback callback){
+    private void carregarPerfil(final Callback callback){
         DatabaseReference usuarioRef = ref.child(Base64Custom.codificar(auth.getCurrentUser().getEmail()));
         usuarioRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -191,7 +201,7 @@ public class PerfilFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        carregarPerfil(new PerfilActivity.Callback() {
+        carregarPerfil(new Callback() {
             @Override
             public void onDataLoaded() {
 
@@ -213,7 +223,7 @@ public class PerfilFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        carregarPerfil(new PerfilActivity.Callback() {
+        carregarPerfil(new Callback() {
             @Override
             public void onDataLoaded() {
 
@@ -253,10 +263,5 @@ public class PerfilFragment extends Fragment {
 //            }
 //        });
 //    }
-    public void Sair(View view){
-        auth.signOut();
-        Intent intent = new Intent(getActivity(), MainActivity.class);
-        startActivity(intent);
-        getActivity().finish();
-    }
+
 }

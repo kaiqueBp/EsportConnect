@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -25,13 +28,21 @@ import com.example.esporte.config.ListarConversaAdapter;
 import com.example.esporte.config.ListarPessoasGrupoAdapter;
 import com.example.esporte.model.Grupo;
 import com.example.esporte.model.Usuarios;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +52,10 @@ public class PerfilGrupoActivity extends AppCompatActivity {
     private ImageView img;
     private ListarPessoasGrupoAdapter adapter;
     private RecyclerView recyclerView;
+    private static final int REQUEST_IMAGE_SELECT = 1;
+    private StorageReference storage;
+    private Uri selectedImageUri;
+    private String urlImagem;
     //private ArrayList<Usuarios> listaUsuarios = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +134,22 @@ public class PerfilGrupoActivity extends AppCompatActivity {
 
         if(grupo.getFoto() != null || grupo.getFoto() == ""){
             Glide.with(this).load(grupo.getFoto()).into(img);
-        }
+        }else
+            img.setImageResource(R.drawable.grupo_padrao);
+
+
+        img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(grupo.getFoto() != null || grupo.getFoto() == ""){
+                    DeletarFoto();
+                }
+                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, REQUEST_IMAGE_SELECT);
+
+            }
+        });
+
         adicionar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,6 +160,23 @@ public class PerfilGrupoActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+    @Override
+    protected void onActivityResult ( int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("DEBUG", "onActivityResult called");
+        if (resultCode == RESULT_OK && data != null) {
+            img.setImageDrawable(null);
+            try {
+                Bitmap imagem = null;
+                Uri selected = data.getData();
+                imagem = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selected);
+                img.setImageBitmap(imagem);
+                SalvarFoto();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
     }
     private void deletarUsuario(String idPessoa, String idGrupo, final Callback callback) {
         DatabaseReference mensagensRef = FirebaseDatabase.getInstance().getReference("grupos");
@@ -193,6 +240,85 @@ public class PerfilGrupoActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void DeletarFoto(){
+        StorageReference imagemRef = FirebaseStorage.getInstance().getReference();
+        StorageReference image = imagemRef.child("imagens");
+        StorageReference imgRef = image.child(grupo.getNome());
+        imgRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                //Toast.makeText(EditarActivity.this,"Imagem deletada com sucesso",Toast.LENGTH_LONG).show();
+                Log.d("DEBUG", "Imagem deletada com sucesso");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                //Toast.makeText(EditarActivity.this,"Erro ao deletar a imagem",Toast.LENGTH_LONG).show();
+                Log.d("DEBUG", "Erro ao deletar a imagem");
+            }
+        });
+    }
+
+    public void SalvarFoto(){
+        if(img.getDrawable() == null){
+
+        }else{
+            img.setDrawingCacheEnabled(true);
+            img.buildDrawingCache();
+            Bitmap bitmap = img.getDrawingCache();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100,baos);
+            byte[] dadosImagem = baos.toByteArray();
+            // Salvar a imagem no Firebase Storage
+            StorageReference imagemRef = FirebaseStorage.getInstance().getReference();
+            StorageReference image = imagemRef.child("imagens/grupos");
+            StorageReference imgRef = image.child(grupo.getId());
+
+            UploadTask up = imgRef.putBytes(dadosImagem);
+            up.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    PegarImagem(new ListarConversaAdapter.Callback() {
+                        @Override
+                        public void onDataLoaded() {
+                            grupo.setFoto(urlImagem);
+                            Atualizar();
+                            finish();
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    });
+
+                }
+            });
+        }
+
+    }
+    public void PegarImagem(final ListarConversaAdapter.Callback callback){
+        String caminhoImagem = "imagens/grupos/"+grupo.getId();
+        StorageReference imagemRef = ConfiguracaoFirebase.getFirestore();
+        StorageReference ref = imagemRef.child(caminhoImagem);
+        ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                urlImagem = uri.toString();
+                callback.onDataLoaded();
+            }
+        });
+    }
+    private void Atualizar(){
+        DatabaseReference grupoRef = ConfiguracaoFirebase.getFirebase().child("grupos").child(grupo.getId());
+        grupoRef.setValue(grupo);
+        DatabaseReference conversaRef = ConfiguracaoFirebase.getFirebase().child("Conversas");
+        for (Usuarios usuario:grupo.getMembros()) {
+            conversaRef.child(usuario.getIdUsuario()).child(grupo.getId()).child("grupo").setValue(grupo);
+        }
+    }
+
     public interface Callback {
         void onDataLoaded();
         void onError();

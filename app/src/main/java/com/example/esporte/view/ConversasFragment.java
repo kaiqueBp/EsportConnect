@@ -110,25 +110,38 @@ public class ConversasFragment extends Fragment {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Conversa conversa = snapshot.getValue(Conversa.class);
-                if (!Listaconversa.contains(conversa)) {
-                    if(!conversa.getIsGroup().equals("true")){
+
+                if (conversa != null && !Listaconversa.contains(conversa)) {
+                    if (!conversa.getIsGroup().equals("true")) {
                         apenasConversas.add(conversa);
                     }
                     Listaconversa.add(conversa);
-                    adapter.notifyDataSetChanged();
+                    adapter.notifyItemInserted(Listaconversa.size() - 1);  // Notifica apenas o item adicionado
                 }
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
+                Conversa conversa = snapshot.getValue(Conversa.class);
+                if (conversa != null) {
+                    int position = Listaconversa.indexOf(conversa);
+                    if (position != -1) {
+                        Listaconversa.set(position, conversa);
+                        adapter.notifyItemChanged(position);
+                    }
+                }
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
                 Conversa conversa = snapshot.getValue(Conversa.class);
-                Listaconversa.remove(conversa);
-                adapter.notifyDataSetChanged();
+                if (conversa != null) {
+                    int position = Listaconversa.indexOf(conversa);
+                    if (position != -1) {
+                        Listaconversa.remove(position);
+                        adapter.notifyItemRemoved(position);
+                    }
+                }
             }
 
             @Override

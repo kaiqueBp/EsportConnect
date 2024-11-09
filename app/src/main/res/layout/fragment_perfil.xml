@@ -85,24 +85,20 @@
             android:padding="10dp">
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/btSair"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:layout_marginLeft="8dp"
-                android:onClick="Sair"
                 android:text="Sair" />
 
             <!-- Adiciona um espaço entre os botões -->
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
 
             <Button
                 android:id="@+id/IdSugestao"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
                 android:layout_marginRight="8dp"
                 android:text="Sugestões"
                 android:textAlignment="viewEnd" />

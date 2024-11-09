@@ -38,7 +38,11 @@ public class PessoasAdapter extends RecyclerView.Adapter<PessoasAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Glide.with(context).load(usuarios.get(position).getFoto()).into(holder.img);
+        if(usuarios.get(position).getFoto() != null){
+            Glide.with(context).load(usuarios.get(position).getFoto()).into(holder.img);
+        }else
+            holder.img.setImageResource(R.drawable.usuario_padrao);
+
         holder.nome.setText(usuarios.get(position).getNome());
         holder.pessoa.setOnClickListener(new View.OnClickListener() {
             @Override

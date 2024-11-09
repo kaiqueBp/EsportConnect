@@ -41,7 +41,9 @@ public class ListarPessoasGrupoAdapter extends RecyclerView.Adapter<ListarPessoa
         if(usuarios.size() > 0){
             if(usuarios.get(position).getFoto() != null){
                 Glide.with(context).load(usuarios.get(position).getFoto()).into(holder.foto);
-            }
+            }else
+                holder.foto.setImageResource(R.drawable.usuario_padrao);
+
             if(usuarios.get(position).getIdUsuario().equals(ConfiguracaoFirebase.IDUsuarioLogado()))
                 holder.nome.setText("Você");
             else

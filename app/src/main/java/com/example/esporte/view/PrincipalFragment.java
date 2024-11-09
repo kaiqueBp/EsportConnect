@@ -49,16 +49,7 @@ public class PrincipalFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_teste, container, false);
 
         pesquisa = view.findViewById(R.id.idPes);
-        perfil = view.findViewById(R.id.idPerfil);
-        verificaLogin();
 
-        perfil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PerfilActivity.class);
-                startActivity(intent);
-            }
-        });
         //loadEsportes();
         recyclerView = view.findViewById(R.id.idRecycle);
         recyclerView.setHasFixedSize(true);

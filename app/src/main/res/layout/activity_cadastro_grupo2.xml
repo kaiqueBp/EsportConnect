@@ -34,12 +34,12 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
-                android:src="@drawable/baseline_groups_24" />
+                android:src="@drawable/grupo_padrao" />
 
             <EditText
                 android:id="@+id/idNomeGrupo"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="Nome do Grupo"

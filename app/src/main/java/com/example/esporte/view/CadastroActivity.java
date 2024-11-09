@@ -333,15 +333,15 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                 Log.d("ValidateCityTask", "Resposta: " + response);
                 try {
                     JSONArray jsonArray = new JSONArray(response);
+                    String cidadePadronizado = padronizarTitulo(text.getText().toString());
+
                     for (int i = 0; i < jsonArray.length(); i++) {
-                        String cidadeInfo = jsonArray.getString(i);
-
-                        String[] partes = cidadeInfo.split(":");
-                        String codigoCidade = partes[0];
-                        String nomeCidade = partes[1];
-
-                        if(padronizarTitulo(nomeCidade).equals(padronizarTitulo(text.getText().toString()))){
-                            j++;
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        String nome = jsonObject.getString("nome");
+                        nome = padronizarTitulo(nome);
+                        if (nome.equals(cidadePadronizado)) {
+                            j =1;
+                            break;
                         }
                     }
                 } catch (JSONException e) {
@@ -351,12 +351,12 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                 }
                 if (j > 0 ) {
                     SalvarFoto();
-                    endereco.setLocalidade(text.getText().toString().toLowerCase().replace(" ", ""));
+                    endereco.setLocalidade(text.getText().toString().toUpperCase());
                     endereco.setUf(spinner.getSelectedItem().toString());
                     callback.onCityValidated(true, endereco);
-                }else {
+                }
+                if(j == 0){
                     Toast.makeText(CadastroActivity.this, "Cidade inválida ou Estado inválido", Toast.LENGTH_SHORT).show();
-                    //CadastroActivity.this.restartActivity();
                 }
                 j=0;
             }
@@ -367,30 +367,5 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
         finish();
         startActivity(getIntent());
     }
-
-
-
-
-
-
-
-
-
-//    Intent intent = new Intent(this, EsporteSelectionActivity.class);
-//    startActivityForResult(intent, REQUEST_CODE_ESPORTE_SELECTION);
-
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == REQUEST_CODE_ESPORTE_SELECTION && resultCode == RESULT_OK) {
-//            ArrayList<String> selectedEsportes = data.getStringArrayListExtra("selected_esportes");
-//
-//            // Passa a lista de esportes selecionados para a outra atividade
-//            Intent intent = new Intent(this, OutraAtividade.class);
-//            intent.putStringArrayListExtra("selected_esportes", selectedEsportes);
-//            startActivity(intent);
-//        }
-//    }
 
 }

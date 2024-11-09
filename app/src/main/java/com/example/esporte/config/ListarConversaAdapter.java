@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.example.esporte.model.Grupo;
 import com.example.esporte.model.Mensagem;
 import com.example.esporte.model.Usuarios;
 import com.example.esporte.view.ChatActivity;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,12 +32,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
 public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAdapter.MyViewHolder> {
     private List<Conversa> conversas;
     private Context context;
+    private  Grupo grupo;
 
     public ListarConversaAdapter(List<Conversa> conversas, Context context) {
         this.conversas = conversas;
@@ -52,15 +56,26 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
     @Override
     public void onBindViewHolder(@NonNull ListarConversaAdapter.MyViewHolder holder, int position) {
         Conversa conversa = conversas.get(holder.getAdapterPosition());
-
+//        CarregarGrupo(conversa.getGrupo().getId(), new Callback() {
+//            @Override
+//            public void onDataLoaded() {
+//
+//            }
+//
+//            @Override
+//            public void onError() {
+//
+//            }
+//        });
 
         if(conversa.getIsGroup().equals("true")){
+
             Grupo grupo = conversa.getGrupo();
             holder.nome.setText(grupo.getNome());
             if(grupo.getFoto() != null){
                 Glide.with(context).load(grupo.getFoto()).into(holder.img);
             }else{
-                holder.img.setImageResource(R.drawable.baseline_person_24);
+                holder.img.setImageResource(R.drawable.grupo_padrao);
             }
             holder.msg.setText(conversa.getUltimaMensagem());
         }else{
@@ -70,7 +85,7 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
             if(usuario.getFoto() != null){
                 Glide.with(context).load(usuario.getFoto()).into(holder.img);
             }else{
-                holder.img.setImageResource(R.drawable.baseline_person_24);
+                holder.img.setImageResource(R.drawable.usuario_padrao);
             }
         }
 
@@ -119,7 +134,7 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
                         if(conversa.getUsuarioExibicao() == null){
                             idRem = conversa.getIdRemetente();
                             idDest = conversa.getIdDestinatario();
-                            notifyItemRemoved(position);
+                            notifyItemRemoved(holder.getAdapterPosition());
                         }else{
                             Usuarios usuarioCLicado = conversas.get(posicao).getUsuarioExibicao();
 
@@ -127,7 +142,7 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
                             String usuarioPessaoal = auth.getCurrentUser().getEmail();
                             idDest = usuarioCLicado.getIdUsuario();
                             idRem = Base64Custom.codificar(usuarioPessaoal);
-                            notifyItemRemoved(position);
+                            notifyItemRemoved(holder.getAdapterPosition());
                         }
 
 
@@ -178,6 +193,7 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
         private ImageView img;
         private TextView nome, msg;
         private CardView cardView;
+
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             img = itemView.findViewById(R.id.imgConversa);
@@ -254,6 +270,24 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
             }
         });
     }
+    private  void CarregarGrupo(String idGrupo, final Callback callback){
+        DatabaseReference mensagensRef = FirebaseDatabase.getInstance().getReference("grupos");
+        mensagensRef.child(idGrupo).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                grupo = snapshot.getValue(Grupo.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+
+
+
     public interface Callback {
         void onDataLoaded();
         void onError();
