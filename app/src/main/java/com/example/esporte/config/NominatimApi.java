@@ -10,6 +10,9 @@ public class NominatimApi {
     private static final String API_URL = "https://servicodados.ibge.gov.br/api/v1/localidades/estados/";
     private static final OkHttpClient client = new OkHttpClient();
 
+    public NominatimApi(OkHttpClient mockClient) {
+    }
+
     public static String searchCity(String estado) throws IOException {
         String estadoEncoded = URLEncoder.encode(estado, "UTF-8");
         Request request = new Request.Builder()

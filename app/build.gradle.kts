@@ -55,6 +55,8 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.google.android.material:material:1.9.0")
     implementation ("org.osmdroid:osmdroid-android:6.1.10")
-
+    testImplementation ("org.mockito:mockito-core:4.2.0")
+    testImplementation ("org.robolectric:robolectric:4.9")
+    testImplementation ("com.squareup.okhttp3:mockwebserver:4.10.0")
 
 }
