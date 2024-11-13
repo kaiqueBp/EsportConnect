@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.esporte.R;
+import com.example.esporte.config.Base64Custom;
 import com.example.esporte.config.ConfiguracaoFirebase;
 import com.example.esporte.config.GrupoSelecionadoAdapter;
 import com.example.esporte.model.Conversa;
@@ -28,6 +29,12 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -46,6 +53,7 @@ public class CadastroGrupoActivity extends AppCompatActivity {
     private StorageReference storage;
     private Grupo grupo;
     private FloatingActionButton fab;
+    private Usuarios usuarioLogado;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,12 +89,22 @@ public class CadastroGrupoActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String nome = nomeGrupo.getText().toString();
-                usuarios.add(ConfiguracaoFirebase.UsuarioLogado());
-                grupo.setMembros(usuarios);
-                grupo.setNome(nome);
-                grupo.Salvar();
-                finish();
+                carregarPerfil(new Callback() {
+                    @Override
+                    public void onDataLoaded() {
+                        String nome = nomeGrupo.getText().toString();
+                        usuarios.add(usuarioLogado);
+                        grupo.setMembros(usuarios);
+                        grupo.setNome(nome);
+                        grupo.Salvar();
+                        finish();
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                });
             }
         });
     }
@@ -133,5 +151,31 @@ public class CadastroGrupoActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
+    public void carregarPerfil(final Callback callback){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Usuarios");
+        FirebaseAuth auth = ConfiguracaoFirebase.getAutenticacao();
+        DatabaseReference usuarioRef = ref.child(Base64Custom.codificar(auth.getCurrentUser().getEmail()));
+        usuarioRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    usuarioLogado = new Usuarios();
+                    usuarioLogado = snapshot.getValue(Usuarios.class);
+                    callback.onDataLoaded();
+                } else {
+                    callback.onError();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onError();
+            }
+        });
+    }
+    public interface Callback {
+        void onDataLoaded();
+        void onError();
     }
 }

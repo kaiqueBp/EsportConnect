@@ -54,7 +54,7 @@ public class PrincipalFragment extends Fragment {
         recyclerView = view.findViewById(R.id.idRecycle);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-        loadEsportes(new PrincipalActivity.Callback() {
+        loadEsportes(new Callback() {
             @Override
             public void onDataLoaded() {
                 EsporteAdapter adapter = new EsporteAdapter(arrayEsporte, getActivity());
@@ -79,7 +79,7 @@ public class PrincipalFragment extends Fragment {
                 if (s.length() != 0) {
                     DatabaseReference database = ConfiguracaoFirebase.getFirebase().child("Esportes");
                     ArrayList <Esporte> arrayList = new ArrayList<>();
-                    String query = s.toString().trim();
+                    String query = s.toString().trim().toUpperCase();
 
                     database.orderByChild("nome").startAt(query).endAt(query + "z")
                             .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -133,7 +133,7 @@ public class PrincipalFragment extends Fragment {
             //finish();
         }
     }
-    private void loadEsportes(final PrincipalActivity.Callback callback) {
+    private void loadEsportes(final Callback callback) {
         DatabaseReference database = ConfiguracaoFirebase.getFirebase();
         database = database.child("Esportes");
 

@@ -120,15 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void abrirTelaPrincipal(){
-        startActivity(new Intent(this, PrincipalActivity.class));
+        startActivity(new Intent(this, Teste.class));
         finish();
     }
-//    public void verificaLogin(){
-//        auth = FirebaseAuth.getInstance();
-//        if(auth.getCurrentUser().getEmail() != null){
-//            startActivity(new Intent(MainActivity.this, PrincipalActivity.class));
-//            finish();
-//
-//        }else {}auth.signOut();
-//    }
 }

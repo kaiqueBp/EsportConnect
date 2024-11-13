@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -106,7 +107,7 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
          btCadastrar.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 String sNome = nome.getText().toString();
+                 String sNome = nome.getText().toString().toUpperCase();
                  String sEmail = email.getText().toString().toLowerCase();
                  String sSenha = senha.getText().toString();
 
@@ -155,14 +156,15 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-
-                            String idUsuario = Base64Custom.codificar(usuario.getEmail());
-                            usuario.setIdUsuario(idUsuario);
-                            usuario.setFoto(imgUrl);
-                            //usuario.salvar();
-
-                            Toast.makeText(CadastroActivity.this, "Cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
-                            abrirTelaPrincipal();
+                            FirebaseUser  user = auth.getCurrentUser ();
+                            user.sendEmailVerification()
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            Toast.makeText(CadastroActivity.this, "Cadastrado com sucesso! Verifique seu email para ativar sua conta.", Toast.LENGTH_SHORT).show();
+                                            verificarEmail(user);
+                                        }
+                                    });
                         }else{
                             String erro="";
                             try {
@@ -196,6 +198,39 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
         }
     }
 
+
+    private void verificarEmail(FirebaseUser  user) {
+        final Handler handler = new Handler();
+        final int delay = 5000; // 5 segundos
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                user.reload().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            if (user.isEmailVerified()) {
+                                // Email verificado, navegue para a tela principal
+                                String idUsuario = Base64Custom.codificar(usuario.getEmail());
+                                usuario.setIdUsuario(idUsuario);
+                                usuario.setFoto(imgUrl);
+                                usuario.salvar();
+                                abrirTelaPrincipal();
+                            } else {
+                                // Email não verificado, continue verificando
+                                verificarEmail(user); // Chama novamente para verificar
+                            }
+                        } else {
+                            // Trate possíveis erros durante o reload
+                            Toast.makeText(CadastroActivity.this, "Erro ao verificar email.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        }, delay);
+    }
+
     public void SalvarFoto(){
         if(img.getDrawable() == null){
 
@@ -227,7 +262,7 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                             usuario.setFoto(url.toString());
                             FirebaseUser user = auth.getCurrentUser();
                             user.updateProfile(new UserProfileChangeRequest.Builder().setPhotoUri(url).build());
-                            usuario.salvar();
+                           // usuario.salvar();
                             Toast.makeText(CadastroActivity.this,url.toString(),Toast.LENGTH_LONG).show();
 
                         }
@@ -288,7 +323,7 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
 
 
     public void abrirTelaPrincipal(){
-        startActivity(new Intent(this, PrincipalActivity.class));
+        startActivity(new Intent(this, Teste.class));
         finish();
     }
 

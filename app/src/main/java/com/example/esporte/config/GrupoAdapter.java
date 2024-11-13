@@ -48,7 +48,11 @@ public class GrupoAdapter extends RecyclerView.Adapter<GrupoAdapter.ViewHolder>{
     public void onBindViewHolder(@NonNull GrupoAdapter.ViewHolder holder, int position) {
         Conversa conversa = conversas.get(position);
         Usuarios usuario = conversa.getUsuarioExibicao();
-        Glide.with(context).load(usuario.getFoto()).into(holder.img);
+        if (usuario.getFoto() == null || usuario.getFoto() == ""){
+            holder.img.setImageResource(R.drawable.usuario_padrao);
+        }else{
+            Glide.with(context).load(usuario.getFoto()).into(holder.img);
+        }
         holder.nome.setText(usuario.getNome());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

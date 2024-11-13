@@ -114,7 +114,11 @@ public class EditarActivity extends AppCompatActivity implements AdapterView.OnI
         CarregarDados();
     }
     private void CarregarDados() {
-        Glide.with(this).load(usuario.getFoto()).into(img);
+        if(usuario.getFoto() == null || usuario.getFoto() == ""){
+            img.setImageResource(R.drawable.usuario_padrao);
+        }else{
+            Glide.with(this).load(usuario.getFoto()).into(img);
+        }
         nome.setText(usuario.getNome());
         cidade.setText(usuario.getEndereco().getLocalidade());
         estado.setSelection(posicao);
@@ -219,8 +223,6 @@ public class EditarActivity extends AppCompatActivity implements AdapterView.OnI
                 urlImagem = uri.toString();
                 usuario.setFoto(urlImagem);
                 usuario.salvar();
-                Intent intent = new Intent(EditarActivity.this, PerfilActivity.class);
-                startActivity(intent);
                 finish();
             }
         });

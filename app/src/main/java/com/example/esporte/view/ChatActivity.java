@@ -13,6 +13,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +45,10 @@ import com.example.esporte.model.Endereco;
 import com.example.esporte.model.Grupo;
 import com.example.esporte.model.Mensagem;
 import com.example.esporte.model.Usuarios;
+
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -482,32 +487,27 @@ public class ChatActivity extends BaseBotton {
     }
     private void PegarLoc(final Callback callback) {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Verificar permissão de localização
+        boolean isLocationEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // Solicitar uma única atualização de localização
-            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    lati = location.getLatitude();
-                    longi = location.getLongitude();
-                    callback.onDataLoaded(); // Chama o callback após pegar a localização
-                }
-
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-                }
-            }, null); // O segundo parâmetro é o Handler, null para o padrão.
+            if (!isLocationEnabled) {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+            }
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            if (location != null) {
+                                lati = location.getLatitude();
+                                longi = location.getLongitude();
+                                callback.onDataLoaded();
+                            }
+                        }
+                    });
         } else {
-            // Solicitar permissão de localização
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
         }
     }

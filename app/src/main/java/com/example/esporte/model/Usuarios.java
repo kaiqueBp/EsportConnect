@@ -116,11 +116,5 @@ public class Usuarios implements Serializable {
     public void setEsportes(ArrayList<String> esportes) {
         this.esportes = esportes;
     }
-    public void adicionarEsporte(String esporte) {
-        if (this.esportes == null) {
-            this.esportes = new ArrayList<>();
-        }
-        this.esportes.add(esporte.toString());
-    }
 
 }

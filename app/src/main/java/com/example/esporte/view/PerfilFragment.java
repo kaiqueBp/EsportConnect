@@ -96,7 +96,11 @@ public class PerfilFragment extends Fragment {
 
                 nome.setText(usuario.getNome());;
                 sexo.setText(usuario.getSexo());
-                Glide.with(getActivity()).load(usuario.getFoto()).into(imageView);
+                if(usuario.getFoto() == null || usuario.getFoto() == ""){
+                    imageView.setImageResource(R.drawable.usuario_padrao);
+                }else{
+                    Glide.with(getActivity()).load(usuario.getFoto()).into(imageView);
+                }
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, usuario.getEsportes());
                 listaEsportes.setAdapter(adapter);
                 //cidade.setText(usuario.getEndereco().getLocalidade() + " - " + usuario.getEndereco().getUf());
@@ -207,7 +211,11 @@ public class PerfilFragment extends Fragment {
 
                 nome.setText(usuario.getNome());;
                 sexo.setText(usuario.getSexo());
-                Glide.with(getActivity()).load(usuario.getFoto()).into(imageView);
+                if(usuario.getFoto() == null || usuario.getFoto() == ""){
+                    imageView.setImageResource(R.drawable.usuario_padrao);
+                }else{
+                    Glide.with(getActivity()).load(usuario.getFoto()).into(imageView);
+                }
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, usuario.getEsportes());
                 listaEsportes.setAdapter(adapter);
                 cidade.setText(usuario.getEndereco().getLocalidade() + " - " + usuario.getEndereco().getUf());
@@ -229,7 +237,11 @@ public class PerfilFragment extends Fragment {
 
                 nome.setText(usuario.getNome());;
                 sexo.setText(usuario.getSexo());
-                Glide.with(getActivity()).load(usuario.getFoto()).into(imageView);
+                if(usuario.getFoto() == null || usuario.getFoto() == ""){
+                    imageView.setImageResource(R.drawable.usuario_padrao);
+                }else{
+                    Glide.with(getActivity()).load(usuario.getFoto()).into(imageView);
+                }
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, usuario.getEsportes());
                 listaEsportes.setAdapter(adapter);
                 cidade.setText(usuario.getEndereco().getLocalidade() + " - " + usuario.getEndereco().getUf());
@@ -241,27 +253,4 @@ public class PerfilFragment extends Fragment {
             }
         });
     }
-
-//    @Override
-//    public void onRestart() {
-//        super.onRestart();
-//        carregarPerfil(new PerfilActivity.Callback() {
-//            @Override
-//            public void onDataLoaded() {
-//
-//                nome.setText(usuario.getNome());;
-//                sexo.setText(usuario.getSexo());
-//                Glide.with(getActivity()).load(usuario.getFoto()).into(imageView);
-//                ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, usuario.getEsportes());
-//                listaEsportes.setAdapter(adapter);
-//                cidade.setText(usuario.getEndereco().getLocalidade() + " - " + usuario.getEndereco().getUf());
-//            }
-//
-//            @Override
-//            public void onError() {
-//                // Tratar erro
-//            }
-//        });
-//    }
-
 }

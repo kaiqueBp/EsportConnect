@@ -96,7 +96,7 @@ public class PessoasFragment extends Fragment {
                 if (s.length() != 0) {
                     DatabaseReference database = ConfiguracaoFirebase.getFirebase().child("Usuarios");
                     ArrayList<Usuarios> arrayList = new ArrayList<>();
-                    String query = s.toString().trim();
+                    String query = s.toString().trim().toUpperCase();
 
                     database.orderByChild("nome").startAt(query).endAt(query + "z")
                             .addListenerForSingleValueEvent(new ValueEventListener() {

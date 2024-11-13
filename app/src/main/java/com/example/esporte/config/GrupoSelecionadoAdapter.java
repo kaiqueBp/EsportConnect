@@ -41,7 +41,11 @@ public class GrupoSelecionadoAdapter extends RecyclerView.Adapter<GrupoSeleciona
     @Override
     public void onBindViewHolder(@NonNull GrupoSelecionadoAdapter.ViewHolder holder, int position) {
         holder.txt.setText(usuariosSelecionados.get(position).getNome());
-        Glide.with(context).load(usuariosSelecionados.get(position).getFoto()).into(holder.img);
+        if (usuariosSelecionados.get(position).getFoto() == null || usuariosSelecionados.get(position).getFoto() == ""){
+            holder.img.setImageResource(R.drawable.usuario_padrao);
+        }else{
+            Glide.with(context).load(usuariosSelecionados.get(position).getFoto()).into(holder.img);
+        }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

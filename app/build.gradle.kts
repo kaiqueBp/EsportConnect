@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.gridlayout)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -54,5 +55,6 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.google.android.material:material:1.9.0")
     implementation ("org.osmdroid:osmdroid-android:6.1.10")
+
 
 }
