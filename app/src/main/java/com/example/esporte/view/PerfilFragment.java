@@ -95,7 +95,7 @@ public class PerfilFragment extends Fragment {
             public void onDataLoaded() {
 
                 nome.setText(usuario.getNome());;
-                sexo.setText(usuario.getSexo());
+                sexo.setText("sexo: "+ usuario.getSexo());
                 if(usuario.getFoto() == null || usuario.getFoto() == ""){
                     imageView.setImageResource(R.drawable.usuario_padrao);
                 }else{
@@ -123,35 +123,36 @@ public class PerfilFragment extends Fragment {
         return view;
     }
     private void showInputDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Digite o nome do esporte");
-
-        // Configurando o campo de entrada
-        final EditText input = new EditText(getActivity());
-        builder.setView(input);
-
-        builder.setPositiveButton("Enviar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String esporte = input.getText().toString();
-                sendEmail(esporte);
-            }
-        });
-        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
+        sendEmail("");
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//        builder.setTitle("Digite o nome do esporte");
+//
+//        // Configurando o campo de entrada
+//        final EditText input = new EditText(getActivity());
+//        builder.setView(input);
+//
+//        builder.setPositiveButton("Enviar", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                String esporte = input.getText().toString();
+//                sendEmail(esporte);
+//            }
+//        });
+//        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.cancel();
+//            }
+//        });
+//
+//        builder.show();
     }
 
     private void sendEmail(String esporte) {
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
         emailIntent.setData(Uri.parse("mailto:kpbarros2@outlook.com")); // Substitua pelo seu e-mail
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Nome do Esporte");
-        emailIntent.putExtra(Intent.EXTRA_TEXT, esporte);
+//        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Nome do Esporte");
+//        emailIntent.putExtra(Intent.EXTRA_TEXT, esporte);
 
         // Verifica se há um aplicativo que pode enviar o e-mail
         if (emailIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
@@ -210,7 +211,7 @@ public class PerfilFragment extends Fragment {
             public void onDataLoaded() {
 
                 nome.setText(usuario.getNome());;
-                sexo.setText(usuario.getSexo());
+                sexo.setText("sexo: "+ usuario.getSexo());
                 if(usuario.getFoto() == null || usuario.getFoto() == ""){
                     imageView.setImageResource(R.drawable.usuario_padrao);
                 }else{
@@ -236,7 +237,7 @@ public class PerfilFragment extends Fragment {
             public void onDataLoaded() {
 
                 nome.setText(usuario.getNome());;
-                sexo.setText(usuario.getSexo());
+                sexo.setText("sexo: "+ usuario.getSexo());
                 if(usuario.getFoto() == null || usuario.getFoto() == ""){
                     imageView.setImageResource(R.drawable.usuario_padrao);
                 }else{

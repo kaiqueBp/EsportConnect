@@ -2,13 +2,21 @@ package com.example.esporte.view;
 
 import static android.content.Intent.getIntent;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -55,7 +63,7 @@ public class ConversasFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_conversas, container, false);
 
         criarGrupo = view.findViewById(R.id.idCriarGrupo);
-        toolbarConversa =  view.findViewById(R.id.toolbar);
+        toolbarConversa = view.findViewById(R.id.toolbar);
 
         AppCompatActivity activity = (AppCompatActivity) requireActivity();
         activity.setSupportActionBar(toolbarConversa);
@@ -67,26 +75,51 @@ public class ConversasFragment extends Fragment {
         }
 
         adapter = new ListarConversaAdapter(Listaconversa, getActivity());
-        recyclerView =  view.findViewById(R.id.idListarConversa);
+        recyclerView = view.findViewById(R.id.idListarConversa);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
+
         databaseRef = ConfiguracaoFirebase.getFirebase();
         String identificarUsuario = Base64Custom.codificar(ConfiguracaoFirebase.getAutenticacao().getCurrentUser().getEmail());
-        database =  databaseRef.child("Conversas").child(identificarUsuario);
+        database = databaseRef.child("Conversas").child(identificarUsuario);
 
         criarGrupo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent intent = new Intent(getActivity(), CriarGrupoActivity.class);
                 intent.putExtra("lista", apenasConversas);
                 startActivity(intent);
-                //Toast.makeText(ListarConversasActivity.this, "Criar Grupo", Toast.LENGTH_SHORT).show();
             }
         });
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("canal_id", "Nome do Canal", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager manager = requireContext().getSystemService(NotificationManager.class);
+            if (manager != null) {
+                manager.createNotificationChannel(channel);
+            }
+        }
+
         return view;
+    }
+
+    private void enviarNotificacao(String mensagem) {
+        Intent intent = new Intent(getActivity(), Teste.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), 0, intent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_MUTABLE);
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(requireContext(), "canal_id")
+                .setSmallIcon(R.drawable.baseline_chat_24)
+                .setContentTitle("Nova Mensagem")
+                .setContentText(mensagem)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager = (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager != null) {
+            notificationManager.notify(0, notificationBuilder.build());
+        }
     }
 
     @Override
@@ -117,6 +150,7 @@ public class ConversasFragment extends Fragment {
                     }
                     Listaconversa.add(conversa);
                     adapter.notifyItemInserted(Listaconversa.size() - 1);  // Notifica apenas o item adicionado
+                    enviarNotificacao(conversa.getUltimaMensagem());
                 }
             }
 

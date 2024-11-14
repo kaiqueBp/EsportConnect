@@ -125,7 +125,15 @@ public class ChatActivity extends BaseBotton {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
-
+        recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if (adapter.getItemCount() > 0) {
+                    recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+                }
+            }
+        });
         imgLocalizar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

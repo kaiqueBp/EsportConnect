@@ -4,6 +4,7 @@ package com.example.esporte.view;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.example.esporte.R;
 import com.example.esporte.config.Base64Custom;
@@ -385,7 +387,9 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                     // Handle JSON parsing error
                 }
                 if (j > 0 ) {
-                    SalvarFoto();
+                    if(!ComparaImagem(img,R.drawable.baseline_person_24)){
+                        SalvarFoto();
+                    }
                     endereco.setLocalidade(text.getText().toString().toUpperCase());
                     endereco.setUf(spinner.getSelectedItem().toString());
                     callback.onCityValidated(true, endereco);
@@ -397,7 +401,13 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
             }
         }
     }
+    public boolean ComparaImagem(ImageView imageView, int drawableId) {
+        BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+        Bitmap imageViewBitmap = drawable.getBitmap();
 
+        Bitmap drawableBitmap = ((BitmapDrawable) ContextCompat.getDrawable(imageView.getContext(), drawableId)).getBitmap();
+        return imageViewBitmap.sameAs(drawableBitmap);
+    }
     public void restartActivity() {
         finish();
         startActivity(getIntent());

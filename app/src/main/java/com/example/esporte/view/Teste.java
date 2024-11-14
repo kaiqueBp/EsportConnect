@@ -1,5 +1,6 @@
 package com.example.esporte.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -15,6 +16,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.esporte.R;
+import com.example.esporte.config.FirebaseListenerService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -30,7 +32,8 @@ public class Teste extends AppCompatActivity {
                 R.id.navPerfil, R.id.navHome, R.id.navConversa)
                 .build();
         NavigationUI.setupWithNavController(navView, navController);
-
+        Intent serviceIntent = new Intent(this, FirebaseListenerService.class);
+        startService(serviceIntent);
 
         navView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
