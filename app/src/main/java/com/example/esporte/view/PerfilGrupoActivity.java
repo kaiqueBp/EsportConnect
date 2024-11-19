@@ -9,13 +9,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -48,7 +51,7 @@ import java.util.List;
 
 public class PerfilGrupoActivity extends AppCompatActivity {
     private Grupo grupo;
-    private TextView nomeGrupo, adicionar;
+    private TextView nomeGrupo, adicionar,titulo;
     private ImageView img;
     private ListarPessoasGrupoAdapter adapter;
     private RecyclerView recyclerView;
@@ -56,17 +59,46 @@ public class PerfilGrupoActivity extends AppCompatActivity {
     private StorageReference storage;
     private Uri selectedImageUri;
     private String urlImagem;
+    private Toolbar too;
     //private ArrayList<Usuarios> listaUsuarios = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil_grupo);
         nomeGrupo = findViewById(R.id.idPNomeGrop);
+        titulo = findViewById(R.id.tituloGrup);
         adicionar = findViewById(R.id.idAdd);
         img = findViewById(R.id.idImgPGrupo);
         Bundle extras = getIntent().getExtras();
         grupo = (Grupo) extras.getSerializable("perfilGrupo");
+        too = findViewById(R.id.idToolbarP);
+        setSupportActionBar(too);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Grupo");
+        titulo.setText(grupo.getNome());
 
+        titulo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText editText = new EditText(PerfilGrupoActivity.this);
+                editText.setText(titulo.getText().toString());
+
+                // Construindo o AlertDialog
+                new AlertDialog.Builder(PerfilGrupoActivity.this)
+                        .setTitle("Editar Texto")
+                        .setView(editText)
+                        .setPositiveButton("Salvar", (dialog, which) -> {
+                            // Atualizando o TextView com o novo texto
+                            titulo.setText(editText.getText().toString());
+                            grupo.setNome(titulo.getText().toString());
+                            Atualizar();
+                            finish();
+                        })
+                        .setNegativeButton("Cancelar", (dialog, which) -> dialog.dismiss())
+                        .show();
+
+            }
+        });
         adapter = new ListarPessoasGrupoAdapter(grupo.getMembros(), PerfilGrupoActivity.this, new GrupoAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
@@ -160,6 +192,14 @@ public class PerfilGrupoActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
     @Override
     protected void onActivityResult ( int requestCode, int resultCode, Intent data){

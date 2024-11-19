@@ -121,8 +121,6 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
             @Override
             public boolean onLongClick(View v) {
                 int posicao = holder.getAdapterPosition();
-                // Obter o usuário exibido na conversa correspondente
-               // Usuarios usuarioCLicado = conversas.get(posicao).getUsuarioExibicao();
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setMessage("Excluir conversa?");
@@ -131,6 +129,21 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
                     public void onClick(DialogInterface dialog, int which) {
                         String idRem;
                         String idDest;
+                        if(conversa.getIsGroup().equals("true")){
+                            Grupo g = conversa.getGrupo();
+                            for (Usuarios usuario:g.getMembros()) {
+                                if(usuario.getIdUsuario().equals(ConfiguracaoFirebase.IDUsuarioLogado())){
+                                    g.getMembros().remove(usuario);
+                                }
+                            }
+                            DatabaseReference grupoRef = ConfiguracaoFirebase.getFirebase().child("grupos").child(g.getId());
+                            grupoRef.setValue(g);
+                            DatabaseReference conversaRef = ConfiguracaoFirebase.getFirebase().child("Conversas");
+                            for (Usuarios usuario:g.getMembros()) {
+                                conversaRef.child(usuario.getIdUsuario()).child(g.getId()).child("grupo").setValue(g);
+                            }
+                            conversaRef.child(ConfiguracaoFirebase.IDUsuarioLogado()).child(g.getId()).child("grupo").setValue(g);
+                        }
                         if(conversa.getUsuarioExibicao() == null){
                             idRem = conversa.getIdRemetente();
                             idDest = conversa.getIdDestinatario();
@@ -167,6 +180,7 @@ public class ListarConversaAdapter extends RecyclerView.Adapter<ListarConversaAd
 
                             }
                         });
+
                     }
                 });
                 builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
