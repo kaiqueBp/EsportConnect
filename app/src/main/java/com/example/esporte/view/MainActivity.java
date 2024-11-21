@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.esporte.R;
 import com.example.esporte.config.ConfiguracaoFirebase;
+import com.example.esporte.config.FirebaseListenerService;
 import com.example.esporte.model.Usuarios;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -36,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //verificaLogin();
         setContentView(R.layout.activity_main);
         FirebaseApp.initializeApp(this);
 
@@ -117,7 +117,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-
     }
     public void abrirTelaPrincipal(){
         startActivity(new Intent(this, Teste.class));

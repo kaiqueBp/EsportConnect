@@ -125,15 +125,7 @@ public class ChatActivity extends BaseBotton {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
-        recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if (adapter.getItemCount() > 0) {
-                    recyclerView.scrollToPosition(adapter.getItemCount() - 1);
-                }
-            }
-        });
+
         imgLocalizar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,12 +140,12 @@ public class ChatActivity extends BaseBotton {
 
                             if(pessoa != null){
                                 msg.setIdUsuario(idRemetente);
-                                msg.setMensagem(mensagem.getText().toString());
+                                msg.setMensagem("Localização");
 
                                 Salvar(idRemetente, idDestinatario, msg);
                                 Salvar(idDestinatario, idRemetente, msg);
-                                SalvarConversa(idRemetente,idDestinatario,msg,pessoa);
-                                SalvarConversa(idDestinatario,idRemetente,msg,usuarioAux);
+                                SalvarConversa(idRemetente,idDestinatario,msg,pessoa,"true");
+                                SalvarConversa(idDestinatario,idRemetente,msg,usuarioAux,"false");
                             }else {
                                 for (Usuarios membros : grupo.getMembros()) {
                                     String idRem = Base64Custom.codificar(membros.getEmail());
@@ -163,7 +155,11 @@ public class ChatActivity extends BaseBotton {
                                     msg.setMensagem(mensagem.getText().toString());
                                     msg.setNome(usuarioLogado.getNome());
                                     Salvar(idRem, idDestinatario, msg);
-                                    SalvarConversa(idRem, idDestinatario, msg, null);
+                                    if(idRem.equals(idDes)){
+                                        SalvarConversa(idRem, idDestinatario, msg, null,"true");
+                                    }else{
+                                        SalvarConversa(idRem, idDestinatario, msg, null,"false");
+                                    }
                                 }
                             }
                         }
@@ -272,15 +268,12 @@ public class ChatActivity extends BaseBotton {
             Bitmap imagem = null;
             try {
                 if (requestCode == SELECAO_CAMERA) {
-                    // Imagem capturada pela câmera
                     imagem = (Bitmap) data.getExtras().get("data");
                     //imagemCamera.setImageBitmap(imagem);
 
                 } else if (requestCode == SELECAO_GALERIA) {
-                    // Imagem selecionada da galeria
                     Uri selectedImageUri = data.getData();
                     if (selectedImageUri != null) {
-                        // Converte o Uri da galeria em Bitmap
                         imagem = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
                        // imagemCamera.setImageBitmap(imagem);
                     }
@@ -321,8 +314,9 @@ public class ChatActivity extends BaseBotton {
 
                                         Salvar(idRemetente, idDestinatario, msg);
                                         Salvar(idDestinatario, idRemetente, msg);
-                                        SalvarConversa(idRemetente,idDestinatario,msg,pessoa);
-                                        SalvarConversa(idDestinatario,idRemetente,msg,usuarioAux);
+
+                                        SalvarConversa(idRemetente,idDestinatario,msg,pessoa,"true");
+                                        SalvarConversa(idDestinatario,idRemetente,msg,usuarioAux,"false");
                                     }else {
                                         for (Usuarios membros : grupo.getMembros()) {
                                             String idRem = Base64Custom.codificar(membros.getEmail());
@@ -332,7 +326,11 @@ public class ChatActivity extends BaseBotton {
                                             msg.setMensagem(mensagem.getText().toString());
                                             msg.setNome(usuarioLogado.getNome());
                                             Salvar(idRem, idDestinatario, msg);
-                                            SalvarConversa(idRem, idDestinatario, msg, null);
+                                            if(idRem.equals(idDes)){
+                                                SalvarConversa(idRem, idDestinatario, msg, null,"true");
+                                            }else{
+                                                SalvarConversa(idRem, idDestinatario, msg, null,"false");
+                                            }
                                         }
                                     }
                                 }
@@ -365,8 +363,8 @@ public class ChatActivity extends BaseBotton {
 
                 Salvar(idRemetente, idDestinatario, msg);
                 Salvar(idDestinatario, idRemetente, msg);
-                SalvarConversa(idRemetente,idDestinatario,msg,pessoa);
-                SalvarConversa(idDestinatario,idRemetente,msg,usuarioAux);
+                SalvarConversa(idRemetente,idDestinatario,msg,pessoa,"true");
+                SalvarConversa(idDestinatario,idRemetente,msg,usuarioAux,"false");
             }else{
                 for(Usuarios membros : grupo.getMembros()){
                     String idRem = Base64Custom.codificar(membros.getEmail());
@@ -377,10 +375,11 @@ public class ChatActivity extends BaseBotton {
                     msg.setMensagem(mensagem.getText().toString());
                     msg.setNome(usuarioLogado.getNome());
                     Salvar(idRem, idDestinatario, msg);
-                    //Salvar(idDes, idDestinatario, msg);
-                    SalvarConversa(idRem, idDestinatario, msg, null);
-                    //SalvarConversa(idDes, idDestinatario, msg, null);
-                    //SalvarConversa(idDestinatario, idRem, msg, null);
+                    if(idRem.equals(idDes)){
+                        SalvarConversa(idRem, idDestinatario, msg, null,"true");
+                    }else{
+                        SalvarConversa(idRem, idDestinatario, msg, null,"false");
+                    }
                 }
             }
             mensagem.setText("");
@@ -389,12 +388,12 @@ public class ChatActivity extends BaseBotton {
             //mensagem.setError("Digite uma mensagem");
         }
     }
-    private void SalvarConversa(String idR, String idD, Mensagem mensagem, Usuarios pessoa){
+    private void SalvarConversa(String idR, String idD, Mensagem mensagem, Usuarios pessoa, String visualizacao){
         Conversa conversaRem = new Conversa();
         conversaRem.setIdRemetente(idR);
         conversaRem.setIdDestinatario(idD);
         conversaRem.setUltimaMensagem(mensagem.getMensagem());
-
+        conversaRem.setVisualiza(visualizacao);
         if(pessoa != null){
             conversaRem.setUsuarioExibicao(pessoa);
         }else {
@@ -469,7 +468,9 @@ public class ChatActivity extends BaseBotton {
                 Mensagem msg = snapshot.getValue(Mensagem.class);
                 menssagens.add(msg);
                 adapter.notifyDataSetChanged();
-
+                recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                database.child("Conversas").child(idRemetente).child(idDestinatario).child("visualiza").setValue("true");
             }
 
             @Override

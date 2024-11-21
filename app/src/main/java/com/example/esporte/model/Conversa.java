@@ -12,9 +12,12 @@ public class Conversa implements Serializable {
     private Usuarios usuarioExibicao;
     private String isGroup;
     private Grupo grupo;
+    private String visualiza;
 
     public Conversa() {
+
         this.setIsGroup("false");
+        this.setVisualiza("false");
     }
 
     public void Salvar(){
@@ -23,6 +26,15 @@ public class Conversa implements Serializable {
         databaseConversa.child(getIdRemetente()).child(getIdDestinatario()).setValue(this);
         //databaseConversa.child(getIdDestinatario()).child(getIdRemetente()).setValue(this);
     }
+
+    public String getVisualiza() {
+        return visualiza;
+    }
+
+    public void setVisualiza(String visualiza) {
+        this.visualiza = visualiza;
+    }
+
     public String getIdRemetente() {
         return idRemetente;
     }

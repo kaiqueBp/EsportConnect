@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.example.esporte.R;
 import com.example.esporte.config.ConfiguracaoFirebase;
 import com.example.esporte.config.EsporteAdapter;
+import com.example.esporte.config.FirebaseListenerService;
 import com.example.esporte.model.Esporte;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -132,6 +133,7 @@ public class PrincipalFragment extends Fragment {
             startActivity(intent);
             //finish();
         }
+        
     }
     private void loadEsportes(final Callback callback) {
         DatabaseReference database = ConfiguracaoFirebase.getFirebase();

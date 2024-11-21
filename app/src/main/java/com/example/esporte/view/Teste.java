@@ -16,9 +16,11 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.esporte.R;
+import com.example.esporte.config.ConfiguracaoFirebase;
 import com.example.esporte.config.FirebaseListenerService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class Teste extends AppCompatActivity {
     public static BottomNavigationView navView;
@@ -32,8 +34,14 @@ public class Teste extends AppCompatActivity {
                 R.id.navPerfil, R.id.navHome, R.id.navConversa)
                 .build();
         NavigationUI.setupWithNavController(navView, navController);
-        Intent serviceIntent = new Intent(this, FirebaseListenerService.class);
-        startService(serviceIntent);
+
+        FirebaseAuth auth = ConfiguracaoFirebase.getAutenticacao();
+        auth = FirebaseAuth.getInstance();
+        if(auth.getCurrentUser() != null){
+            Intent serviceIntent = new Intent(this, FirebaseListenerService.class);
+            startService(serviceIntent);
+        }
+
 
         navView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override

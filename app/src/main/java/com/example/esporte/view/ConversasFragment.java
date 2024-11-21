@@ -104,24 +104,6 @@ public class ConversasFragment extends Fragment {
         return view;
     }
 
-    private void enviarNotificacao(String mensagem) {
-        Intent intent = new Intent(getActivity(), Teste.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), 0, intent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_MUTABLE);
-
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(requireContext(), "canal_id")
-                .setSmallIcon(R.drawable.baseline_chat_24)
-                .setContentTitle("Nova Mensagem")
-                .setContentText(mensagem)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent);
-
-        NotificationManager notificationManager = (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        if (notificationManager != null) {
-            notificationManager.notify(0, notificationBuilder.build());
-        }
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -150,7 +132,6 @@ public class ConversasFragment extends Fragment {
                     }
                     Listaconversa.add(conversa);
                     adapter.notifyItemInserted(Listaconversa.size() - 1);  // Notifica apenas o item adicionado
-                    enviarNotificacao(conversa.getUltimaMensagem());
                 }
             }
 

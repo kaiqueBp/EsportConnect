@@ -150,7 +150,7 @@ public class PerfilFragment extends Fragment {
 
     private void sendEmail(String esporte) {
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
-        emailIntent.setData(Uri.parse("mailto:kpbarros2@outlook.com")); // Substitua pelo seu e-mail
+        emailIntent.setData(Uri.parse("mailto:suporteEsporteConnect@outlook.com")); // Substitua pelo seu e-mail
 //        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Nome do Esporte");
 //        emailIntent.putExtra(Intent.EXTRA_TEXT, esporte);
 
