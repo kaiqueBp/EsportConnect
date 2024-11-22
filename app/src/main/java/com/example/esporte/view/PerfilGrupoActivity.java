@@ -106,7 +106,7 @@ public class PerfilGrupoActivity extends AppCompatActivity {
                 String id = usuario.getIdUsuario();
                 if(!usuario.getIdUsuario().equals(ConfiguracaoFirebase.IDUsuarioLogado())){
                     AlertDialog.Builder builder = new AlertDialog.Builder(PerfilGrupoActivity.this);
-                    builder.setMessage("Excluir conversa?");
+                    builder.setMessage("Excluir membro do grupo?");
                     builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {

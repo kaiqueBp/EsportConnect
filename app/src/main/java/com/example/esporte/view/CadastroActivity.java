@@ -2,6 +2,9 @@ package com.example.esporte.view;
 
 
 
+import static com.example.esporte.view.EditarActivity.usuario;
+
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -62,7 +65,7 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
     private RadioButton sexoMasculino;
     private RadioButton sexoFeminino;
     private RadioButton sexoOutros;
-    private Usuarios usuario;
+    private Usuarios usuarioCadastrar;
     private Esporte esporte;
     private FirebaseAuth auth;
     private EditText nome, email, senha;
@@ -116,14 +119,14 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                  //boolean sSexo = RadionButton();
                  if(!sNome.isEmpty() && !sEmail.isEmpty() && !sSenha.isEmpty() && RadionButton() != ""){
 
-                     usuario = new Usuarios();
+                     usuarioCadastrar = new Usuarios();
 
-                     usuario.setNome(sNome);
+                     usuarioCadastrar.setNome(sNome);
 
-                     usuario.setEmail(sEmail);
-                     usuario.setSenha(sSenha);
-                     usuario.setSexo(RadionButton());
-                     //usuario.setEsportes(selectedEsportes);
+                     usuarioCadastrar.setEmail(sEmail);
+                     usuarioCadastrar.setSenha(sSenha);
+                     usuarioCadastrar.setSexo(RadionButton());
+                     //usuarioCadastrar.setEsportes(selectedEsportes);
                      validar();
 
                  }else{
@@ -150,10 +153,10 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
             return "O";
         }else return "";
     }
-    public void cadastrarUsuario(){
+    public void cadastrarusuarioCadastrar(){
 
         auth = ConfiguracaoFirebase.getAutenticacao();
-        auth.createUserWithEmailAndPassword(usuario.getEmail(), usuario.getSenha())
+        auth.createUserWithEmailAndPassword(usuarioCadastrar.getEmail(), usuarioCadastrar.getSenha())
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -212,16 +215,15 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
+                            ProgressDialog progressDialog = new ProgressDialog(CadastroActivity.this);
+                            progressDialog.setMessage("Esperando Validacao do Email...");
+                            progressDialog.setCancelable(false); // Prevent cancellation
+                            progressDialog.show();
                             if (user.isEmailVerified()) {
-                                // Email verificado, navegue para a tela principal
-                                String idUsuario = Base64Custom.codificar(usuario.getEmail());
-                                usuario.setIdUsuario(idUsuario);
-                                usuario.setFoto(imgUrl);
-                                usuario.salvar();
                                 abrirTelaPrincipal();
                             } else {
-                                // Email não verificado, continue verificando
-                                verificarEmail(user); // Chama novamente para verificar
+
+                                verificarEmail(user);
                             }
                         } else {
                             // Trate possíveis erros durante o reload
@@ -261,15 +263,17 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                         @Override
                         public void onComplete(@NonNull Task<Uri> task) {
                             Uri url = task.getResult();
-                            usuario.setFoto(url.toString());
+                            usuarioCadastrar.setFoto(url.toString());
                             FirebaseUser user = auth.getCurrentUser();
                             user.updateProfile(new UserProfileChangeRequest.Builder().setPhotoUri(url).build());
-                           // usuario.salvar();
-                            Toast.makeText(CadastroActivity.this,url.toString(),Toast.LENGTH_LONG).show();
+                            String idusuarioCadastrar = Base64Custom.codificar(usuarioCadastrar.getEmail());
+                            usuarioCadastrar.setIdUsuario(idusuarioCadastrar);
+                            usuarioCadastrar.setEsportes(usuario.getEsportes());
+                            usuarioCadastrar.salvar();
 
                         }
                     });
-                    Toast.makeText(CadastroActivity.this,"Imagem Salva com Sucesso",Toast.LENGTH_LONG).show();
+                   // Toast.makeText(CadastroActivity.this,"Imagem Salva com Sucesso",Toast.LENGTH_LONG).show();
                 }
             });
         }
@@ -281,7 +285,7 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
         String city = padronizarTitulo(text.getText().toString());;
         state = spinner.getSelectedItem().toString().toLowerCase();
         //state = endereco.getEstado(state);
-        Toast.makeText(this, "Estado selecionado: " + city, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Estado selecionado: " + city, Toast.LENGTH_SHORT).show();
         if(city.isEmpty() || state == "Selecione um estado"){
             Toast.makeText(this, "Informe uma cidade e um estado", Toast.LENGTH_SHORT).show();
             return;
@@ -290,11 +294,11 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                 @Override
                 public void onCityValidated(boolean isValid, Endereco endereco) {
                     if (isValid) {
-                        // Cidade válida, prosseguir com o cadastro do usuário
-                        usuario.setEndereco(endereco);
-                        cadastrarUsuario();
+
+                        usuarioCadastrar.setEndereco(endereco);
+                        cadastrarusuarioCadastrar();
                     } else {
-                        // Cidade inválida, mostrar mensagem de erro
+
 
                         Toast.makeText(CadastroActivity.this, "Cidade inválida ou Estado inválido", Toast.LENGTH_SHORT).show();
 
@@ -352,7 +356,7 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
 
         @Override
         protected String doInBackground(String... params) {
-            String state = params[1]; // adicionado para receber a sigla do estado
+            String state = params[1];
             try {
                 String response = NominatimApi.searchCity(state);
                 return response;
@@ -387,9 +391,7 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                     // Handle JSON parsing error
                 }
                 if (j > 0 ) {
-                    if(!ComparaImagem(img,R.drawable.baseline_person_24)){
-                        SalvarFoto();
-                    }
+                    SalvarFoto();
                     endereco.setLocalidade(text.getText().toString().toUpperCase());
                     endereco.setUf(spinner.getSelectedItem().toString());
                     callback.onCityValidated(true, endereco);
@@ -400,13 +402,6 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
                 j=0;
             }
         }
-    }
-    public boolean ComparaImagem(ImageView imageView, int drawableId) {
-        BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
-        Bitmap imageViewBitmap = drawable.getBitmap();
-
-        Bitmap drawableBitmap = ((BitmapDrawable) ContextCompat.getDrawable(imageView.getContext(), drawableId)).getBitmap();
-        return imageViewBitmap.sameAs(drawableBitmap);
     }
     public void restartActivity() {
         finish();

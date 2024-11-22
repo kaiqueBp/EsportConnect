@@ -8,6 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.esporte.R;
@@ -22,6 +23,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
@@ -99,7 +101,27 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            abrirTelaPrincipal();
+                            FirebaseUser user = auth.getCurrentUser ();
+                            user.reload().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        if (user.isEmailVerified()) {
+                                            abrirTelaPrincipal();
+                                        } else {
+                                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                                            builder.setTitle("Atenção");
+                                            builder.setMessage("Email não verificado");
+                                            builder.setPositiveButton("OK", null);
+                                            AlertDialog dialog = builder.create();
+                                            dialog.show();
+                                        }
+                                    } else {
+                                        // Trate possíveis erros durante o reload
+                                        Toast.makeText(MainActivity.this, "Erro ao verificar email.", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
                             Toast.makeText(MainActivity.this, "Bem - vindo!!", Toast.LENGTH_SHORT).show();
                         } else {
                             String erro = "";
