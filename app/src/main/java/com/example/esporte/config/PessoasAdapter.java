@@ -27,6 +27,7 @@ public class PessoasAdapter extends RecyclerView.Adapter<PessoasAdapter.ViewHold
     public PessoasAdapter(ArrayList<Usuarios> usuarios, Context context) {
         this.usuarios = usuarios;
         this.context = context;
+
     }
 
     @NonNull
@@ -70,6 +71,7 @@ public class PessoasAdapter extends RecyclerView.Adapter<PessoasAdapter.ViewHold
             img = itemView.findViewById(R.id.imgPessoa);
             nome = itemView.findViewById(R.id.nomePessoa);
             pessoa = itemView.findViewById(R.id.idCardPessos);
+
         }
     }
 }

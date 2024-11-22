@@ -53,7 +53,7 @@ public class PessoasFragment extends Fragment {
     private Button filtro, filtragem, limparFiltro;
     private Spinner spinnerState, spinnerSex, spinnerCidade;
     private EditText pesquisa;
-    private TextView titulo;
+    private TextView titulo, vazio;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,6 +76,7 @@ public class PessoasFragment extends Fragment {
         spinnerSex = view.findViewById(R.id.spinner_sex);
         recyclerView = view.findViewById(R.id.recyclePessoas);
         pesquisa = view.findViewById(R.id.idPesquisa);
+        vazio = view.findViewById(R.id.idNenhum);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         if (getArguments() != null) {
@@ -102,7 +103,7 @@ public class PessoasFragment extends Fragment {
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    arrayList.clear(); // Limpa a lista antes de adicionar novos resultados
+                                    arrayList.clear();
                                     if (dataSnapshot.exists()) {
                                         for (DataSnapshot sportSnapshot : dataSnapshot.getChildren()) {
                                             Usuarios usuario = sportSnapshot.getValue(Usuarios.class);
@@ -227,6 +228,9 @@ public class PessoasFragment extends Fragment {
         loadUsuarios(new Callback() {
             @Override
             public void onDataLoaded() {
+                if(arrayUsuario.isEmpty()){
+                    vazio.setVisibility(View.VISIBLE);
+                }
                 PessoasAdapter adapter = new PessoasAdapter(arrayUsuario, getActivity());
                 recyclerView.setAdapter(adapter);
             }

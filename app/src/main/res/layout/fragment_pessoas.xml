@@ -68,6 +68,16 @@
                 android:textSize="30sp"
                 android:textStyle="bold" />
 
+            <TextView
+                android:id="@+id/idNenhum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="Nenhum usuário encontrado"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclePessoas"
                 android:layout_width="match_parent"
