@@ -122,7 +122,7 @@ public class PrincipalFragment extends Fragment {
         if(auth.getCurrentUser() == null){
             Intent intent = new Intent(getActivity(), MainActivity.class);
             startActivity(intent);
-            //finish();
+            getActivity().finish();
         }
         FirebaseUser use = auth.getCurrentUser();
         if(!use.isEmailVerified()){
@@ -130,7 +130,6 @@ public class PrincipalFragment extends Fragment {
             startActivity(intent);
             getActivity().finish();
         }
-        
     }
     private void loadEsportes(final Callback callback) {
         DatabaseReference database = ConfiguracaoFirebase.getFirebase();

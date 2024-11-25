@@ -429,30 +429,28 @@ public class ChatActivity extends BaseBotton {
         menssagens.clear();
         adapter.notifyDataSetChanged();
         RecuperarMenssagem();
-
-
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        menssagens.clear();
-        adapter.notifyDataSetChanged();
-    //    RecuperarMenssagem();
-        if(usuarioAux == null){
-            UsuarioLocal(new Callback() {
-                @Override
-                public void onDataLoaded() {
-                    usuarioAux = usuarioLogado;
-                }
-
-                @Override
-                public void onError() {
-
-                }
-            });
-        }
-    }
+//    @Override
+//    protected void onRestart() {
+//        super.onRestart();
+//        menssagens.clear();
+//        adapter.notifyDataSetChanged();
+//    //    RecuperarMenssagem();
+//        if(usuarioAux == null){
+//            UsuarioLocal(new Callback() {
+//                @Override
+//                public void onDataLoaded() {
+//                    usuarioAux = usuarioLogado;
+//                }
+//
+//                @Override
+//                public void onError() {
+//
+//                }
+//            });
+//        }
+//    }
 
     @Override
     protected void onStop() {

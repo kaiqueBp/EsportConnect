@@ -93,9 +93,10 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
          senha = findViewById(R.id.idSenha);
          btFoto = findViewById(R.id.btAdicionarFt);
         img = findViewById(R.id.idImg);
-        img.setImageDrawable(getResources().getDrawable(R.drawable.baseline_person_24));
+        img.setImageResource(R.drawable.usuario_padrao);
         text = findViewById(R.id.idCidade);
         spinner = findViewById(R.id.spinner);
+        usuario = new Usuarios();
         spinner.setOnItemSelectedListener(CadastroActivity.this);
         String[] estados = getResources().getStringArray(R.array.Estados);
         ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_spinner_item,estados);
@@ -112,7 +113,7 @@ public class CadastroActivity extends AppCompatActivity implements AdapterView.O
          btCadastrar.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 String sNome = nome.getText().toString().toUpperCase();
+                 String sNome = nome.getText().toString();
                  String sEmail = email.getText().toString().toLowerCase();
                  String sSenha = senha.getText().toString();
 

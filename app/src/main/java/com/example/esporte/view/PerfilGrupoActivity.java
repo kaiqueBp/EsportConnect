@@ -93,6 +93,7 @@ public class PerfilGrupoActivity extends AppCompatActivity {
                             grupo.setNome(titulo.getText().toString());
                             Atualizar();
                             finish();
+
                         })
                         .setNegativeButton("Cancelar", (dialog, which) -> dialog.dismiss())
                         .show();

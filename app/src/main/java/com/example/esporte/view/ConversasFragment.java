@@ -117,6 +117,7 @@ public class ConversasFragment extends Fragment {
         super.onStop();
         database.removeEventListener(childEventListener);
     }
+    
 
     public void RecuperarConversas(){
         apenasConversas.clear();
@@ -131,7 +132,8 @@ public class ConversasFragment extends Fragment {
                         apenasConversas.add(conversa);
                     }
                     Listaconversa.add(conversa);
-                    adapter.notifyItemInserted(Listaconversa.size() - 1);  // Notifica apenas o item adicionado
+                    adapter.notifyDataSetChanged();
+                    adapter.notifyItemInserted(Listaconversa.size() - 1);
                 }
             }
 
