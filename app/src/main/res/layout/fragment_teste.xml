@@ -46,6 +46,17 @@
                 android:hint="Pesquisar" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <TextView
+            android:id="@+id/idVazio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Nenhum esporte encontrado"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:visibility="gone"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/idRecycle"
             android:layout_width="match_parent"

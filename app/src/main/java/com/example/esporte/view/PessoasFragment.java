@@ -48,6 +48,7 @@ public class PessoasFragment extends Fragment {
     private RecyclerView recyclerView;
     private ArrayList<Usuarios> arrayUsuario = new ArrayList<>();
     private ArrayList<Usuarios> arrayAux = new ArrayList<>();
+    private ArrayList<Usuarios> arrayFiltro = new ArrayList<>();
     private  String nome;
     private DrawerLayout drawerLayout;
     private Button filtro, filtragem, limparFiltro;
@@ -95,42 +96,43 @@ public class PessoasFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() != 0) {
-                    DatabaseReference database = ConfiguracaoFirebase.getFirebase().child("Usuarios");
                     ArrayList<Usuarios> arrayList = new ArrayList<>();
-                    String query = s.toString().trim().toUpperCase();
+                    ArrayList<Usuarios> array;
 
-                    database.orderByChild("nome").startAt(query).endAt(query + "z")
-                            .addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    arrayList.clear();
-                                    if (dataSnapshot.exists()) {
-                                        for (DataSnapshot sportSnapshot : dataSnapshot.getChildren()) {
-                                            Usuarios usuario = sportSnapshot.getValue(Usuarios.class);
-                                            if (usuario != null) {
-                                                for (String esporte : usuario.getEsportes()) {
-                                                    if (esporte.equals(nome)) {
-                                                        arrayList.add(usuario);
-                                                        PessoasAdapter adapter = new PessoasAdapter(arrayList, getActivity());
-                                                        recyclerView.setAdapter(adapter);
-                                                    }
-                                                }
-                                                Log.d("Pesquisa", "Esporte encontrado: " + usuario.getNome());
-                                            }
-                                        }
-                                    } else {
-                                        Log.d("Pesquisa", "Nenhum esporte encontrado.");
-                                    }
-                                }
+                    if(!arrayFiltro.isEmpty()){
+                        array = new ArrayList<>(arrayFiltro);
+                    }else
+                        array = new ArrayList<>(arrayUsuario);
 
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                    Log.w("Pesquisa", "Erro ao buscar: ", databaseError.toException());
-                                }
-                            });
+                    if (s.length() != 0) {
+                        String texto = s.toString().toLowerCase();
+                        for (Usuarios usuario : array) {
+                            if (usuario.getNome().toLowerCase().contains(texto)) {
+                                arrayList.add(usuario);
+                            }
+                        }
+                        PessoasAdapter adapter = new PessoasAdapter(arrayList, getActivity());
+                        recyclerView.setAdapter(adapter);
+                        if(arrayList.isEmpty()){
+                            vazio.setVisibility(View.VISIBLE);
+                        }else {
+                            vazio.setVisibility(View.GONE);
+                        }
+                    }
                 }else{
-                    PessoasAdapter adapter = new PessoasAdapter(arrayUsuario, getActivity());
-                    recyclerView.setAdapter(adapter);
+                    if(arrayUsuario.isEmpty()){
+                        vazio.setVisibility(View.VISIBLE);
+                    }else {
+                        vazio.setVisibility(View.GONE);
+                    }
+                    if(!arrayFiltro.isEmpty()){
+                        PessoasAdapter adapter = new PessoasAdapter(arrayFiltro, getActivity());
+                        recyclerView.setAdapter(adapter);
+                    }else{
+                        PessoasAdapter adapter = new PessoasAdapter(arrayUsuario, getActivity());
+                        recyclerView.setAdapter(adapter);
+                    }
+
                 }
             }
 
@@ -175,6 +177,7 @@ public class PessoasFragment extends Fragment {
 //                        // Tratar erro
 //                    }
 //                });
+                arrayFiltro = new ArrayList<>();
                 arrayAux = new ArrayList<>(arrayUsuario);
                 String sexo = "";
                 if(spinnerSex.getSelectedItem().toString().equals("Masculino")){
@@ -194,6 +197,7 @@ public class PessoasFragment extends Fragment {
                         if(u.getSexo().equals(sexo) && u.getEndereco().getLocalidade().equals(spinnerCidade.getSelectedItem().toString())
                                 &&  u.getEndereco().getLocalidade().equals(spinnerCidade.getSelectedItem().toString())){
                             arrayUsuario.add(u);
+                            arrayFiltro.add(u);
                         }
                     }
                 }
@@ -205,6 +209,7 @@ public class PessoasFragment extends Fragment {
                         if(u.getEndereco().getUf().equals(spinnerState.getSelectedItem().toString()) &&
                                 u.getEndereco().getLocalidade().equals(spinnerCidade.getSelectedItem().toString())){
                             arrayUsuario.add(u);
+                            arrayFiltro.add(u);
                         }
                     }
                 }
@@ -214,8 +219,14 @@ public class PessoasFragment extends Fragment {
                     for(Usuarios u : arrayAux){
                         if(u.getSexo().equals(sexo)){
                             arrayUsuario.add(u);
+                            arrayFiltro.add(u);
                         }
                     }
+                }
+                if(arrayUsuario.isEmpty()){
+                    vazio.setVisibility(View.VISIBLE);
+                }else {
+                    vazio.setVisibility(View.GONE);
                 }
                 PessoasAdapter adapter = new PessoasAdapter(arrayUsuario, getActivity());
                 recyclerView.setAdapter(adapter);
@@ -230,6 +241,8 @@ public class PessoasFragment extends Fragment {
             public void onDataLoaded() {
                 if(arrayUsuario.isEmpty()){
                     vazio.setVisibility(View.VISIBLE);
+                }else {
+                    vazio.setVisibility(View.GONE);
                 }
                 PessoasAdapter adapter = new PessoasAdapter(arrayUsuario, getActivity());
                 recyclerView.setAdapter(adapter);
@@ -251,6 +264,12 @@ public class PessoasFragment extends Fragment {
         limparFiltro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                arrayFiltro.clear();
+                if(arrayUsuario.isEmpty()){
+                    vazio.setVisibility(View.VISIBLE);
+                }else {
+                    vazio.setVisibility(View.GONE);
+                }
                 PessoasAdapter adapter = new PessoasAdapter(arrayUsuario, getActivity());
                 recyclerView.setAdapter(adapter);
                 spinnerSex.setSelection(0);

@@ -143,7 +143,7 @@ public class CadastroGrupoActivity extends AppCompatActivity {
 
                                 }
                             });
-                            Toast.makeText(CadastroGrupoActivity.this,"Imagem Salva com Sucesso",Toast.LENGTH_LONG).show();
+                            //Toast.makeText(CadastroGrupoActivity.this,"Imagem Salva com Sucesso",Toast.LENGTH_LONG).show();
                         }
                     });
                 }

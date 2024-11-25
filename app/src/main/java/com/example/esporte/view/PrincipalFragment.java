@@ -20,6 +20,7 @@ import com.example.esporte.config.ConfiguracaoFirebase;
 import com.example.esporte.config.EsporteAdapter;
 import com.example.esporte.config.FirebaseListenerService;
 import com.example.esporte.model.Esporte;
+import com.example.esporte.model.Usuarios;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -36,7 +37,7 @@ public class PrincipalFragment extends Fragment {
     private RecyclerView recyclerView;
     private ArrayList<Esporte> arrayEsporte = new ArrayList<>();
     private TextInputEditText pesquisa;
-    private TextView perfil;
+    private TextView perfil,vazio;
 
 
     @Override
@@ -51,7 +52,7 @@ public class PrincipalFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_teste, container, false);
 
         pesquisa = view.findViewById(R.id.idPes);
-
+        vazio = view.findViewById(R.id.idVazio);
         //loadEsportes();
         recyclerView = view.findViewById(R.id.idRecycle);
         recyclerView.setHasFixedSize(true);
@@ -79,37 +80,26 @@ public class PrincipalFragment extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // Se a pesquisa estiver vazia, não faça a consulta
                 if (s.length() != 0) {
-                    DatabaseReference database = ConfiguracaoFirebase.getFirebase().child("Esportes");
-                    ArrayList <Esporte> arrayList = new ArrayList<>();
-                    String query = s.toString().trim().toUpperCase();
-
-                    database.orderByChild("nome").startAt(query).endAt(query + "z")
-                            .addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    arrayList.clear(); // Limpa a lista antes de adicionar novos resultados
-                                    if (dataSnapshot.exists()) {
-                                        for (DataSnapshot sportSnapshot : dataSnapshot.getChildren()) {
-                                            Esporte esporte = sportSnapshot.getValue(Esporte.class);
-                                            if (esporte != null) {
-
-                                                arrayList.add(esporte);
-                                                EsporteAdapter adapter = new EsporteAdapter(arrayList, getActivity());
-                                                recyclerView.setAdapter(adapter);
-                                                Log.d("Pesquisa", "Esporte encontrado: " + esporte.getNome());
-                                            }
-                                        }
-                                    } else {
-                                        Log.d("Pesquisa", "Nenhum esporte encontrado.");
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                    Log.w("Pesquisa", "Erro ao buscar: ", databaseError.toException());
-                                }
-                            });
+                    ArrayList<Esporte> arrayList = new ArrayList<>();
+                    String texto = s.toString().toLowerCase();
+                    for (Esporte esporte : arrayEsporte) {
+                        if (esporte.getNome().toLowerCase().contains(texto)) {
+                            arrayList.add(esporte);
+                        }
+                    }
+                    EsporteAdapter adapter = new EsporteAdapter(arrayList, getActivity());
+                    recyclerView.setAdapter(adapter);
+                    if (arrayList.isEmpty()) {
+                        vazio.setVisibility(View.VISIBLE);
+                    } else {
+                        vazio.setVisibility(View.GONE);
+                    }
                 }else{
+                    if (arrayEsporte.isEmpty()) {
+                        vazio.setVisibility(View.VISIBLE);
+                    } else {
+                        vazio.setVisibility(View.GONE);
+                    }
                     EsporteAdapter adapter = new EsporteAdapter(arrayEsporte, getActivity());
                     recyclerView.setAdapter(adapter);
                 }
@@ -138,6 +128,7 @@ public class PrincipalFragment extends Fragment {
         if(!use.isEmailVerified()){
             Intent intent = new Intent(getActivity(), MainActivity.class);
             startActivity(intent);
+            getActivity().finish();
         }
         
     }
